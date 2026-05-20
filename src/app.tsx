@@ -28,6 +28,8 @@ import {
   TerminalIcon,
   ColumnsIcon,
   HistoryIcon,
+  AngleDownIcon,
+  CheckIcon,
 } from "@patternfly/react-icons";
 import cockpit from "cockpit";
 
@@ -112,6 +114,9 @@ export const Application = () => {
   const [chatPanelWidth, setChatPanelWidth] = useState(50); // percentage
   const [isResizing, setIsResizing] = useState(false);
   const [safetyDropdownOpen, setSafetyDropdownOpen] = useState(false);
+
+  // Ref for custom safety dropdown click-outside handling
+  const safetyDropdownRef = useRef<HTMLDivElement>(null);
 
   // Session state
   const [sessions, setSessions] = useState<SessionMetadata[]>([]);
@@ -381,6 +386,31 @@ export const Application = () => {
       document.documentElement.classList.remove("pf-v6-theme-dark");
     }
   }, [settings]);
+
+  // Click outside and key handler for custom safety dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        safetyDropdownRef.current &&
+        !safetyDropdownRef.current.contains(event.target as Node)
+      ) {
+        setSafetyDropdownOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSafetyDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   // Status bubble is now rendered in UI natively instead of injected as a message
 
@@ -708,29 +738,29 @@ export const Application = () => {
 
           // Also add a brief message in the chat
           const errorMessage: Message = {
-            role: "assistant",
-            content: `Connection failed after ${error.attemptsMade} attempts. Click the error notification for details.`,
+            role: "system",
+            content: _("Connection failed after {attempts} attempts. Click the error notification for details.", { attempts: error.attemptsMade }),
             timestamp: new Date(),
             isError: true,
           };
           setMessages((prev) => [...prev, errorMessage]);
         } else if (
           (error instanceof DOMException && error.name === "AbortError") ||
-          (error instanceof Error && error.message === "AbortError")
+          (error instanceof Error && (error.message === "AbortError" || error.message === "Request aborted"))
         ) {
           // User aborted the execution, either via fetch AbortController or our application flag
           const stopMessage: Message = {
             id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-            role: "assistant",
-            content: `_Execution stopped._`,
+            role: "system",
+            content: _("Request aborted"),
             timestamp: new Date(),
           };
           setMessages((prev) => [...prev, stopMessage]);
         } else {
           // Handle other errors normally
           const errorMessage: Message = {
-            role: "assistant",
-            content: `Error: ${error instanceof Error ? error.message : "Something went wrong"}`,
+            role: "system",
+            content: `${_("Error")}: ${error instanceof Error ? error.message : _("Something went wrong")}`,
             timestamp: new Date(),
             isError: true,
           };
@@ -1070,45 +1100,60 @@ export const Application = () => {
                 const IconComponent = SAFETY_ICONS[config.icon];
                 return (
                   <FlexItem>
-                    <Dropdown
-                      isOpen={safetyDropdownOpen}
-                      onSelect={() => setSafetyDropdownOpen(false)}
-                      onOpenChange={(isOpen: boolean) =>
-                        setSafetyDropdownOpen(isOpen)
-                      }
-                      toggle={(toggleRef: any) => (
-                        <MenuToggle
-                          ref={toggleRef}
-                          onClick={() =>
-                            setSafetyDropdownOpen(!safetyDropdownOpen)
-                          }
-                          isExpanded={safetyDropdownOpen}
-                          variant="plainText"
-                          className={`safety-badge safety-badge--${config.variant}`}
-                        >
-                          <IconComponent className="safety-badge-icon" />
-                          {_(config.name)}
-                        </MenuToggle>
+                    <div className="custom-safety-dropdown" ref={safetyDropdownRef}>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSafetyDropdownOpen(!safetyDropdownOpen)
+                        }
+                        aria-expanded={safetyDropdownOpen}
+                        aria-haspopup="listbox"
+                        className={`safety-badge safety-badge--${config.variant} safety-dropdown-trigger`}
+                      >
+                        <IconComponent className="safety-badge-icon" />
+                        <span className="safety-badge-text">{_(config.name)}</span>
+                        <AngleDownIcon className={`safety-badge-chevron ${safetyDropdownOpen ? "safety-badge-chevron--open" : ""}`} />
+                      </button>
+                      {safetyDropdownOpen && (
+                        <div className="safety-dropdown-menu" role="listbox">
+                          {Object.entries(SAFETY_MODES).map(
+                            ([key, modeConfig]) => {
+                              const ModeIcon = SAFETY_ICONS[modeConfig.icon];
+                              const isSelected = settings.safetyMode === key;
+                              return (
+                                <button
+                                  key={key}
+                                  type="button"
+                                  className={`safety-dropdown-item safety-dropdown-item--${key} ${
+                                    isSelected ? "safety-dropdown-item--selected" : ""
+                                  }`}
+                                  onClick={() => handleChangeSafetyMode(key)}
+                                  role="option"
+                                  aria-selected={isSelected}
+                                >
+                                  <div className="safety-dropdown-item-icon-container">
+                                    <ModeIcon className="safety-dropdown-item-icon" />
+                                  </div>
+                                  <div className="safety-dropdown-item-content">
+                                    <div className="safety-dropdown-item-name">
+                                      {_(modeConfig.name)}
+                                    </div>
+                                    <div className="safety-dropdown-item-desc">
+                                      {_(modeConfig.description)}
+                                    </div>
+                                  </div>
+                                  {isSelected && (
+                                    <div className="safety-dropdown-item-selected-indicator">
+                                      <CheckIcon />
+                                    </div>
+                                  )}
+                                </button>
+                              );
+                            },
+                          )}
+                        </div>
                       )}
-                    >
-                      <DropdownList>
-                        {Object.entries(SAFETY_MODES).map(
-                          ([key, modeConfig]) => {
-                            const ModeIcon = SAFETY_ICONS[modeConfig.icon];
-                            return (
-                              <DropdownItem
-                                key={key}
-                                value={key}
-                                onClick={() => handleChangeSafetyMode(key)}
-                              >
-                                <ModeIcon className="pf-v6-u-mr-sm" />
-                                {_(modeConfig.name)}
-                              </DropdownItem>
-                            );
-                          },
-                        )}
-                      </DropdownList>
-                    </Dropdown>
+                    </div>
                   </FlexItem>
                 );
               })()}
@@ -1197,6 +1242,7 @@ export const Application = () => {
             messages={messages}
             isProcessing={isProcessing}
             isConfigured={isConfigured}
+            terminalReady={terminalReady}
             onSendMessage={handleSendMessage}
             onOpenSettings={() => setSettingsOpen(true)}
             pendingAction={pendingAction}

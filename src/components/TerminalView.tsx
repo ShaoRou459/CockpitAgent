@@ -26,11 +26,12 @@ export interface TerminalViewHandle {
 }
 
 interface TerminalViewProps {
+  sessionId?: string;
   onReady?: (() => void) | undefined;
 }
 
 export const TerminalView = forwardRef<TerminalViewHandle, TerminalViewProps>(
-  ({ onReady }, ref) => {
+  ({ sessionId, onReady }, ref) => {
     const { t } = useI18n();
     const _ = t;
     const terminalRef = useRef<XTerminalHandle>(null);
@@ -71,7 +72,6 @@ export const TerminalView = forwardRef<TerminalViewHandle, TerminalViewProps>(
           >
             <FlexItem>
               <CardTitle>
-                <span className="terminal-header-icon">⬛</span>
                 {_("Terminal")}
               </CardTitle>
             </FlexItem>
@@ -88,7 +88,7 @@ export const TerminalView = forwardRef<TerminalViewHandle, TerminalViewProps>(
           </Flex>
         </CardHeader>
         <CardBody className="terminal-body">
-          <XTerminal ref={terminalRef} onReady={onReady} />
+          <XTerminal ref={terminalRef} sessionId={sessionId} onReady={onReady} />
         </CardBody>
       </Card>
     );

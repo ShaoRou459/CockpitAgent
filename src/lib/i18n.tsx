@@ -202,6 +202,13 @@ const ZH_CN_TRANSLATIONS: Record<string, string> = {
   "Ask me to help manage this server...": "让我帮你管理这台服务器...",
   "Message input": "消息输入",
   "Stop response": "停止响应",
+  "Agent initializing, please wait...": "助手正在初始化，请稍候...",
+  "Press Enter to send, Shift+Enter for new line": "按 Enter 发送，Shift+Enter 换行",
+  "Request aborted": "请求已中止",
+  "Connection failed after {attempts} attempts. Click the error notification for details.":
+    "连接在尝试 {attempts} 次后失败。点击错误通知查看详情。",
+  Error: "错误",
+  "Something went wrong": "发生未知错误",
   "Send message": "发送消息",
   line: "行",
   lines: "行",

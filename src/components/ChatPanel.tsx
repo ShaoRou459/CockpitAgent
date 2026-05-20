@@ -20,7 +20,6 @@ import {
   ExpandableSection,
 } from "@patternfly/react-core";
 import {
-  PaperPlaneIcon,
   CogIcon,
   RobotIcon,
   TerminalIcon,
@@ -32,7 +31,6 @@ import {
   FileCodeIcon,
   AngleRightIcon,
   AngleDownIcon,
-  StopCircleIcon,
 } from "@patternfly/react-icons";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
@@ -117,6 +115,7 @@ interface ChatPanelProps {
   messages: Message[];
   isProcessing: boolean;
   isConfigured: boolean;
+  terminalReady?: boolean;
   onSendMessage: (message: string) => void;
   onOpenSettings: () => void;
   pendingAction: PendingAction | null;
@@ -131,6 +130,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   messages,
   isProcessing,
   isConfigured,
+  terminalReady = false,
   onSendMessage,
   onOpenSettings,
   pendingAction,
@@ -281,8 +281,34 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
           padding: "16px",
           display: "flex",
           flexDirection: "column",
+          position: "relative",
         }}
       >
+        {!terminalReady && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(33, 36, 39, 0.65)",
+              backdropFilter: "blur(2.5px)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 10,
+              color: "var(--ai-text-color)",
+              pointerEvents: "auto",
+            }}
+          >
+            <Spinner size="md" style={{ marginBottom: "16px" }} />
+            <div style={{ fontSize: "1.1rem", fontWeight: 500 }}>
+              {_("Agent initializing, please wait...")}
+            </div>
+          </div>
+        )}
         <div
           className="chat-messages"
           style={{ flex: 1, display: "flex", flexDirection: "column" }}
@@ -360,39 +386,49 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
       </CardBody>
 
       {/* Input Area */}
-      <CardFooter>
-        <form onSubmit={handleSubmit} className="chat-input-form">
-          <div className="chat-input-container">
-            <TextArea
-              value={input}
-              onChange={(_e, value) => setInput(value)}
-              onKeyDown={handleKeyDown}
-              placeholder={_("Ask me to help manage this server...")}
-              aria-label={_("Message input")}
-              rows={2}
-              resizeOrientation="vertical"
-              isDisabled={!!pendingAction}
-            />
-            {isProcessing ? (
-              <Button
+      <CardFooter className="chat-footer-unified">
+        <form onSubmit={handleSubmit} className="chat-input-form-unified">
+          <TextArea
+            value={input}
+            onChange={(_e, value) => setInput(value)}
+            onKeyDown={handleKeyDown}
+            placeholder={_("Ask me to help manage this server...")}
+            aria-label={_("Message input")}
+            rows={2}
+            className="chat-textarea-unified"
+            isDisabled={!!pendingAction || !terminalReady}
+          />
+          <div
+            style={{
+              padding: "4px 16px 12px 16px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              fontSize: "11px",
+              color: "var(--ai-text-muted)",
+              opacity: 0.6,
+              pointerEvents: "none",
+              userSelect: "none",
+            }}
+          >
+            <span>{_("Press Enter to send, Shift+Enter for new line")}</span>
+            {isProcessing && (
+              <button
                 type="button"
-                variant="danger"
                 onClick={handleStop}
-                aria-label={_("Stop response")}
-                className="chat-action-button"
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "var(--ai-danger-color)",
+                  cursor: "pointer",
+                  pointerEvents: "auto",
+                  fontWeight: 600,
+                  padding: 0,
+                  fontSize: "11px",
+                }}
               >
-                <StopCircleIcon />
-              </Button>
-            ) : (
-              <Button
-                type="submit"
-                variant="primary"
-                isDisabled={!input.trim() || !!pendingAction}
-                aria-label={_("Send message")}
-                className="chat-action-button"
-              >
-                <PaperPlaneIcon />
-              </Button>
+                {_("Stop response")}
+              </button>
             )}
           </div>
         </form>
@@ -696,6 +732,7 @@ const MessageBubble: React.FC<{ message: Message }> = ({ message }) => {
   const isUser = message.role === "user";
   const isAction = message.role === "action";
   const isInteractive = message.role === "interactive";
+  const isSystem = message.role === "system";
   const isError = message.isError;
 
   // Special rendering for action messages - use compact view
@@ -706,6 +743,23 @@ const MessageBubble: React.FC<{ message: Message }> = ({ message }) => {
   // Special rendering for interactive command notices
   if (isInteractive) {
     return <InteractiveBubble message={message} />;
+  }
+
+  // Special rendering for system warning messages
+  if (isSystem) {
+    return (
+      <div className="message-bubble system">
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <ExclamationTriangleIcon style={{ color: "#f0ab00", flexShrink: 0, fontSize: "14px" }} />
+          <div className="message-content" style={{ fontWeight: 500 }}>
+            {message.content}
+          </div>
+        </div>
+        <div className="message-time">
+          {message.timestamp.toLocaleTimeString()}
+        </div>
+      </div>
+    );
   }
 
   // Parse markdown for assistant messages
