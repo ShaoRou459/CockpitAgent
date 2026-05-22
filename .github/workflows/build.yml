@@ -54,6 +54,17 @@ jobs:
         path: dist/
         retention-days: 7
 
+    - name: Compress dist directory for installer
+      run: |
+        tar -cvJf cockpit-ai-agent-dist.tar.xz -C dist .
+
+    - name: Upload dist tarball artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: cockpit-ai-agent-dist-tarball
+        path: cockpit-ai-agent-dist.tar.xz
+        retention-days: 7
+
     - name: Upload RPM package
       uses: actions/upload-artifact@v4
       with:
@@ -73,7 +84,14 @@ jobs:
         with:
           name: cockpit-ai-agent-rpm
       
-      - name: Upload RPM to Release
+      - name: Download dist tarball artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cockpit-ai-agent-dist-tarball
+
+      - name: Upload RPM and dist tarball to Release
         uses: softprops/action-gh-release@v2
         with:
-          files: "*.rpm"
+          files: |
+            *.rpm
+            cockpit-ai-agent-dist.tar.xz

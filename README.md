@@ -31,18 +31,42 @@ A real-time, side-by-side view showing the AI executing disk partition checks, p
 
 ## Installation
 
-### Prerequisites
+### ⚡ Quick System-Wide Installation (Recommended)
 
-- Cockpit installed on your Linux server
-- Node.js 18+ (for development)
-- npm
-
-### Development Setup
+No Node.js, npm, or compilation is required! You can install the pre-compiled plugin directly onto your server with a single command:
 
 ```bash
+curl -sSL https://raw.githubusercontent.com/ShaoRou459/CockpitServerAI/main/install.sh | sudo bash
+```
+
+This installer script will:
+1. Query the GitHub API for the latest release tag.
+2. Download the pre-compiled distribution bundle (`cockpit-ai-agent-dist.tar.xz`).
+3. Safely install the files under `/usr/share/cockpit/cockpit-ai-agent` and set standard system-wide permissions.
+
+#### Installation for a Specific User (Non-Root)
+If you don't have root privileges or want to install it only for your current user, run the script without `sudo`:
+```bash
+curl -sSL https://raw.githubusercontent.com/ShaoRou459/CockpitServerAI/main/install.sh | bash
+```
+This will automatically target your local user path: `~/.local/share/cockpit/cockpit-ai-agent`.
+
+---
+
+### 🛠️ Development & Source Setup
+
+If you want to contribute, modify the code, or build the project from source, use the steps below:
+
+#### Prerequisites
+- Cockpit installed on your Linux server
+- Node.js 18+
+- npm
+
+#### Build from Source
+```bash
 # Clone the repository
-git clone https://github.com/your-username/cockpit-ai-agent.git
-cd cockpit-ai-agent
+git clone https://github.com/ShaoRou459/CockpitServerAI.git
+cd CockpitServerAI
 
 # Install dependencies
 npm install
@@ -50,29 +74,26 @@ npm install
 # Build the plugin
 npm run build
 
-# Link for development (symlink to ~/.local/share/cockpit)
+# Link for development (symlink to your user's local cockpit directory)
 mkdir -p ~/.local/share/cockpit
 ln -s $(pwd)/dist ~/.local/share/cockpit/cockpit-ai-agent
 
 # Restart Cockpit or refresh your browser
 ```
 
-### Watch Mode (Development)
-
+#### Watch Mode (Development)
 ```bash
 npm run watch
 ```
-
 This will automatically rebuild on file changes.
 
-### Production Build
-
+#### Production Build
 ```bash
 NODE_ENV=production npm run build
 ```
 
-### System-Wide Installation
-
+#### Manual System-Wide Installation
+If you want to build from source and manually copy the build to the system directory:
 ```bash
 sudo cp -r dist /usr/share/cockpit/cockpit-ai-agent
 ```
@@ -88,7 +109,9 @@ You can configure the agent to use local AI models (via Ollama, vLLM, etc.) ensu
 The agent actively scans all command outputs and automatically redacts sensitive information on the fly. Passwords, API keys, and private tokens are replaced with referenceable placeholders (e.g., `<SECRET_1>`) before being sent to the AI provider. The AI can still write commands using these placeholders, and the agent will safely substitute the real secrets back in right before execution—meaning your credentials stay strictly local while the AI still gets the job done.
 
 ### 🚦 Risk Levels & YOLO Mode
-Every generated command is evaluated for risk before execution:
+Every generated command is evaluated for risk before execution. Users can choose from multiple execution modes (Paranoid, Cautious, Moderate, YOLO, and Full YOLO) depending on their security preferences:
+
+![Mode Chooser](modechooser.png)
 
 | Level | Examples | Default Behavior |
 |-------|----------|------------------|
