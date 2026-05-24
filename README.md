@@ -134,8 +134,8 @@ Every command executed by the agent is logged, providing a clear paper trail of 
 
 | Provider | API Key Source | Notes |
 |----------|---------------|-------|
-| **OpenAI** | [platform.openai.com](https://platform.openai.com/api-keys) | Supports GPT-4o, GPT-4-turbo, etc. |
-| **Google Gemini** | [AI Studio](https://makersuite.google.com/app/apikey) | Supports Gemini 2.0, 1.5 Pro/Flash |
+| **OpenAI** | [platform.openai.com](https://platform.openai.com/api-keys) | Supports GPT-5.5, GPT-4o, o3-mini, etc. |
+| **Google Gemini** | [AI Studio](https://makersuite.google.com/app/apikey) | Supports Gemini 3.5 Flash, 3.1 Pro, etc. |
 | **Custom** | Your provider | Any OpenAI-compatible API |
 
 ## Usage
@@ -152,33 +152,7 @@ Simply type what you want to do in natural language:
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────┐
-│          Cockpit Web Interface          │
-├─────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────────┐   │
-│  │  Chat Panel │  │  Terminal View  │   │
-│  │             │  │   (xterm.js)    │   │
-│  └──────┬──────┘  └────────▲────────┘   │
-│         │                  │            │
-│  ┌──────▼──────────────────┴──────┐     │
-│  │        Agent Controller        │     │
-│  │  • AI Client (multi-provider)  │     │
-│  │  • Command Parser              │     │
-│  │  • Approval Manager            │     │
-│  └───────────────┬────────────────┘     │
-│                  │                      │
-│  ┌───────────────▼────────────────┐     │
-│  │      Cockpit API Layer         │     │
-│  │  cockpit.spawn() / file()      │     │
-│  └────────────────────────────────┘     │
-└─────────────────────────────────────────┘
-           │
-           ▼
-    ┌──────────────┐
-    │ Linux Server │
-    └──────────────┘
-```
+![Architecture Diagram](architecture.png)
 
 ## Project Structure
 
@@ -204,19 +178,6 @@ cockpit-ai-agent/
 └── README.md
 ```
 
-## Supported AI Providers
-
-### OpenAI
-- Models: GPT-4o, GPT-4o-mini, GPT-4-turbo, GPT-3.5-turbo, o1-preview, o1-mini
-- Endpoint: `https://api.openai.com/v1`
-
-### Google Gemini
-- Models: Gemini 2.0 Flash, Gemini 1.5 Pro, Gemini 1.5 Flash
-- Endpoint: `https://generativelanguage.googleapis.com`
-
-### Custom (OpenAI-Compatible)
-- Works with: Ollama, vLLM, OpenRouter, Azure OpenAI, etc.
-- Configure your own base URL and model name
 
 ## Contributing
 

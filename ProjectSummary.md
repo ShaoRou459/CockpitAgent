@@ -101,42 +101,7 @@ CockpitServerAI/
 
 ## Architecture Overview
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Cockpit Web Interface                     │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────────┐              ┌─────────────────────┐   │
-│  │   ChatPanel     │              │    TerminalView     │   │
-│  │   (Messages)    │              │    (xterm.js PTY)   │   │
-│  └────────┬────────┘              └──────────▲──────────┘   │
-│           │                                  │              │
-│  ┌────────▼──────────────────────────────────┴────────┐     │
-│  │              Application (app.tsx)                  │     │
-│  │   • State management    • Theme switching           │     │
-│  │   • Settings handling   • Component coordination    │     │
-│  └────────────────────────┬───────────────────────────┘     │
-│                           │                                  │
-│  ┌────────────────────────▼───────────────────────────┐     │
-│  │              AgentController (agent.ts)             │     │
-│  │   • Multi-step execution    • Approval workflow     │     │
-│  │   • Command orchestration   • Result processing     │     │
-│  └────────────────────────┬───────────────────────────┘     │
-│                           │                                  │
-│  ┌────────────────────────▼───────────────────────────┐     │
-│  │              AIClient (ai-client.ts)                │     │
-│  │   • OpenAI/Gemini support   • Response parsing      │     │
-│  │   • HTTP via curl           • Error handling        │     │
-│  └────────────────────────┬───────────────────────────┘     │
-│                           │                                  │
-│  ┌────────────────────────▼───────────────────────────┐     │
-│  │              Cockpit API (cockpit.spawn/file)       │     │
-│  └────────────────────────┬───────────────────────────┘     │
-└───────────────────────────┼─────────────────────────────────┘
-                            ▼
-                    ┌──────────────┐
-                    │  Linux Shell │
-                    └──────────────┘
-```
+![Architecture Overview Diagram](project_summary_architecture.png)
 
 ---
 
@@ -171,8 +136,8 @@ CockpitServerAI/
 ## Key Features
 
 ### 1. Multi-Provider AI Support
-- **OpenAI**: GPT-4o, GPT-4o-mini, GPT-4-turbo, GPT-3.5-turbo, o1-preview, o1-mini
-- **Google Gemini**: Gemini 2.0 Flash, Gemini 1.5 Pro, Gemini 1.5 Flash
+- **OpenAI**: GPT-5.5, GPT-5.5-instant, GPT-5.4, GPT-4o, GPT-4o-mini, o3-mini, o1, o1-mini, o1-pro
+- **Google Gemini**: Gemini 3.5 Flash, Gemini 3.1 Pro, Gemini 3.0 Flash, Gemini 2.5 Pro/Flash, Gemini 1.5 Pro/Flash
 - **Custom Endpoints**: Ollama, Azure OpenAI, OpenRouter, vLLM (OpenAI-compatible)
 
 ### 2. Safety System
