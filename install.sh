@@ -5,12 +5,12 @@
 #
 set -euo pipefail
 
-# Color codes for visual feedback
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m' # No Color
+# Curated shades of purple for the installer theme
+GREEN='\033[38;5;177m'  # Lilac / Light Lavender (Success & highlights)
+BLUE='\033[38;5;99m'    # Medium Purple / Violet (Headers, steps, & info)
+YELLOW='\033[38;5;213m' # Soft Orchid / Light Pink-Purple (Warnings & commands)
+RED='\033[38;5;161m'    # Intense Magenta / Berry (Errors)
+NC='\033[0m'            # No Color
 
 echo -e "${BLUE}====================================================${NC}"
 echo -e "${GREEN}       Installing Cockpit AI Agent System-Wide       ${NC}"

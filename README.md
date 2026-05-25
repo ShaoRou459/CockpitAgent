@@ -36,7 +36,7 @@ A real-time, side-by-side view showing the AI executing disk partition checks, p
 No Node.js, npm, or compilation is required! You can install the pre-compiled plugin directly onto your server with a single command:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/ShaoRou459/CockpitServerAI/main/install.sh | sudo bash
+curl -sSL https://raw.githubusercontent.com/ShaoRou459/CockpitServerAI/master/install.sh | sudo bash
 ```
 
 This installer script will:
@@ -47,7 +47,7 @@ This installer script will:
 #### Installation for a Specific User (Non-Root)
 If you don't have root privileges or want to install it only for your current user, run the script without `sudo`:
 ```bash
-curl -sSL https://raw.githubusercontent.com/ShaoRou459/CockpitServerAI/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/ShaoRou459/CockpitServerAI/master/install.sh | bash
 ```
 This will automatically target your local user path: `~/.local/share/cockpit/cockpit-ai-agent`.
 
