@@ -9,8 +9,6 @@
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
 [![UI-PatternFly](https://img.shields.io/badge/UI-PatternFly-0066CC?style=flat-square&logo=redhat&logoColor=white)](https://www.patternfly.org/)
 
----
-
 ## Features
 
 - 🤖 **Multi-Provider AI Support** - Choose between top-tier models from OpenAI, Google Gemini, or compatible providers to suit your specific administration needs and budget.
@@ -18,6 +16,14 @@
 - 🛡️ **Intelligent Safety Controls** - Execute commands with confidence using customizable risk-based safety modes that prevent accidental or malicious system changes.
 - 🔒 **Automatic Secret Protection** - Keep your sensitive data secure with automatic, on-the-fly detection and redaction of passwords, API keys, and private tokens.
 - 💻 **Interactive Browser Terminal** - Interact directly with your server through a fully-featured terminal environment that natively supports interactive tools like vim, ssh, and sudo.
+
+---
+
+## Demo
+
+<video src="demo.mp4" width="100%" controls></video>
+
+---
 
 ## Screenshots
 
@@ -50,53 +56,6 @@ If you don't have root privileges or want to install it only for your current us
 curl -sSL https://raw.githubusercontent.com/ShaoRou459/CockpitServerAI/master/install.sh | bash
 ```
 This will automatically target your local user path: `~/.local/share/cockpit/cockpit-ai-agent`.
-
----
-
-### 🛠️ Development & Source Setup
-
-If you want to contribute, modify the code, or build the project from source, use the steps below:
-
-#### Prerequisites
-- Cockpit installed on your Linux server
-- Node.js 18+
-- npm
-
-#### Build from Source
-```bash
-# Clone the repository
-git clone https://github.com/ShaoRou459/CockpitServerAI.git
-cd CockpitServerAI
-
-# Install dependencies
-npm install
-
-# Build the plugin
-npm run build
-
-# Link for development (symlink to your user's local cockpit directory)
-mkdir -p ~/.local/share/cockpit
-ln -s $(pwd)/dist ~/.local/share/cockpit/cockpit-ai-agent
-
-# Restart Cockpit or refresh your browser
-```
-
-#### Watch Mode (Development)
-```bash
-npm run watch
-```
-This will automatically rebuild on file changes.
-
-#### Production Build
-```bash
-NODE_ENV=production npm run build
-```
-
-#### Manual System-Wide Installation
-If you want to build from source and manually copy the build to the system directory:
-```bash
-sudo cp -r dist /usr/share/cockpit/cockpit-ai-agent
-```
 
 ## Security & Privacy
 
@@ -153,6 +112,51 @@ Simply type what you want to do in natural language:
 ## Architecture
 
 ![Architecture Diagram](architecture.png)
+
+## 🛠️ Development & Source Setup
+
+If you want to contribute, modify the code, or build the project from source, use the steps below:
+
+### Prerequisites
+- Cockpit installed on your Linux server
+- Node.js 18+
+- npm
+
+### Build from Source
+```bash
+# Clone the repository
+git clone https://github.com/ShaoRou459/CockpitServerAI.git
+cd CockpitServerAI
+
+# Install dependencies
+npm install
+
+# Build the plugin
+npm run build
+
+# Link for development (symlink to your user's local cockpit directory)
+mkdir -p ~/.local/share/cockpit
+ln -s $(pwd)/dist ~/.local/share/cockpit/cockpit-ai-agent
+
+# Restart Cockpit or refresh your browser
+```
+
+### Watch Mode (Development)
+```bash
+npm run watch
+```
+This will automatically rebuild on file changes.
+
+### Production Build
+```bash
+NODE_ENV=production npm run build
+```
+
+### Manual System-Wide Installation
+If you want to build from source and manually copy the build to the system directory:
+```bash
+sudo cp -r dist /usr/share/cockpit/cockpit-ai-agent
+```
 
 ## Project Structure
 
