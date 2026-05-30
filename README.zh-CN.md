@@ -9,7 +9,7 @@
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
 [![UI-PatternFly](https://img.shields.io/badge/UI-PatternFly-0066CC?style=flat-square&logo=redhat&logoColor=white)](https://www.patternfly.org/)
 
-🌐 **English** | [🇨🇳 **中文**](README.zh-CN.md)
+[🌐 **English**](README.md) | 🇨🇳 **中文**
 
 ## 功能特色
 
