@@ -111,6 +111,11 @@ if [ -d "$INSTALL_DIR" ]; then
     echo -e "${YELLOW}Existing installation found at ${INSTALL_DIR}.${NC}"
     echo -e "Creating backup at ${BLUE}${BACKUP_PATH}${NC}"
     mv "$INSTALL_DIR" "$BACKUP_PATH"
+
+    # Hide manifest.json from Cockpit detection to prevent duplicate plugin listings
+    if [ -f "${BACKUP_PATH}/manifest.json" ]; then
+        mv "${BACKUP_PATH}/manifest.json" "${BACKUP_PATH}/manifest.json.bak"
+    fi
 fi
 
 mkdir -p "$INSTALL_DIR"
@@ -125,6 +130,11 @@ if ! tar -xJf "${TMP_DIR}/dist.tar.xz" -C "${TMP_DIR}/extracted"; then
         echo -e "Restoring backup..."
         rm -rf "$INSTALL_DIR"
         mv "$BACKUP_PATH" "$INSTALL_DIR"
+        
+        # Restore manifest.json back for Cockpit detection
+        if [ -f "${INSTALL_DIR}/manifest.json.bak" ]; then
+            mv "${INSTALL_DIR}/manifest.json.bak" "${INSTALL_DIR}/manifest.json"
+        fi
     fi
     exit 1
 fi
