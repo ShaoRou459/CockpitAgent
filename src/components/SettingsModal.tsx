@@ -40,6 +40,7 @@ import {
   InfoCircleIcon,
   ExternalLinkAltIcon,
   TimesIcon,
+  GithubIcon,
 } from "@patternfly/react-icons";
 import { Settings, PROVIDERS, SAFETY_MODES, SafetyMode } from "../lib/settings";
 import { useI18n } from "../lib/i18n";
@@ -613,7 +614,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           rel="noopener noreferrer"
           className="about-link"
         >
-          <ExternalLinkAltIcon /> {_("GitHub Repository")}
+          <GithubIcon /> {_("GitHub Repository")}
         </a>
       </div>
 
