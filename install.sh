@@ -111,8 +111,25 @@ mkdir -p "$INSTALL_DIR"
 
 # 6. Extract pre-compiled assets
 echo -e "${BLUE}[4/4]${NC} Extracting assets into place..."
-if ! tar -xJf "${TMP_DIR}/dist.tar.xz" -C "$INSTALL_DIR"; then
+mkdir -p "${TMP_DIR}/extracted"
+if ! tar -xJf "${TMP_DIR}/dist.tar.xz" -C "${TMP_DIR}/extracted"; then
     echo -e "${RED}Error: Failed to extract tarball contents.${NC}"
+    # Restore backup if it exists
+    if [ -d "${BACKUP_PATH:-}" ]; then
+        echo -e "Restoring backup..."
+        rm -rf "$INSTALL_DIR"
+        mv "$BACKUP_PATH" "$INSTALL_DIR"
+    fi
+    exit 1
+fi
+
+# Copy only the compiled dist assets into the target directory
+if [ -d "${TMP_DIR}/extracted/cockpit-ai-agent/dist" ]; then
+    cp -r "${TMP_DIR}/extracted/cockpit-ai-agent/dist/"* "$INSTALL_DIR"
+elif [ -d "${TMP_DIR}/extracted/dist" ]; then
+    cp -r "${TMP_DIR}/extracted/dist/"* "$INSTALL_DIR"
+else
+    echo -e "${RED}Error: Could not find compiled 'dist' directory in the release assets.${NC}"
     # Restore backup if it exists
     if [ -d "${BACKUP_PATH:-}" ]; then
         echo -e "Restoring backup..."
