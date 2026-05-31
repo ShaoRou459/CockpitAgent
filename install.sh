@@ -12,24 +12,30 @@ YELLOW='\033[38;5;213m' # Soft Orchid / Light Pink-Purple (Warnings & commands)
 RED='\033[38;5;161m'    # Intense Magenta / Berry (Errors)
 NC='\033[0m'            # No Color
 
-echo -e "${BLUE}====================================================${NC}"
-echo -e "${GREEN}       Installing Cockpit AI Agent System-Wide       ${NC}"
-echo -e "${BLUE}====================================================${NC}"
-
 # 1. Determine target directory based on user privileges
 # Check if COCKPIT_DIR is already defined by the user
 if [ -n "${COCKPIT_DIR:-}" ]; then
     INSTALL_DIR="${COCKPIT_DIR}"
-    echo -e "Using custom installation directory: ${BLUE}${INSTALL_DIR}${NC}"
+    INSTALL_TYPE="Custom"
 else
     # Default to system-wide if run as root, otherwise local user directory
     if [ "$EUID" -eq 0 ]; then
         INSTALL_DIR="/usr/share/cockpit/cockpit-ai-agent"
-        echo -e "Running as root. Target: ${BLUE}${INSTALL_DIR}${NC} (System-Wide)"
+        INSTALL_TYPE="System-Wide"
     else
         INSTALL_DIR="${HOME}/.local/share/cockpit/cockpit-ai-agent"
-        echo -e "Running as regular user. Target: ${BLUE}${INSTALL_DIR}${NC} (User-Local)"
+        INSTALL_TYPE="User-Local"
     fi
+fi
+
+echo -e "${BLUE}====================================================${NC}"
+echo -e "${GREEN}       Installing Cockpit AI Agent (${INSTALL_TYPE})       ${NC}"
+echo -e "${BLUE}====================================================${NC}"
+
+if [ "${INSTALL_TYPE}" = "Custom" ]; then
+    echo -e "Using custom installation directory: ${BLUE}${INSTALL_DIR}${NC}"
+else
+    echo -e "Running as $([ "$EUID" -eq 0 ] && echo "root" || echo "regular user"). Target: ${BLUE}${INSTALL_DIR}${NC}"
 fi
 
 # 2. Check for required system commands
