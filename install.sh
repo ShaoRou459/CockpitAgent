@@ -101,6 +101,12 @@ fi
 # 5. Prepare installation target directory
 echo -e "${BLUE}[3/4]${NC} Preparing target directory..."
 if [ -d "$INSTALL_DIR" ]; then
+    # Clean up any older backups first to prevent accumulation
+    if ls -d "${INSTALL_DIR}.bak-"* >/dev/null 2>&1; then
+        echo -e "${YELLOW}Cleaning up old backups...${NC}"
+        rm -rf "${INSTALL_DIR}.bak-"*
+    fi
+
     BACKUP_PATH="${INSTALL_DIR}.bak-$(date +%Y%m%d%H%M%S)"
     echo -e "${YELLOW}Existing installation found at ${INSTALL_DIR}.${NC}"
     echo -e "Creating backup at ${BLUE}${BACKUP_PATH}${NC}"
