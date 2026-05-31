@@ -608,7 +608,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
       <div className="about-links">
         <a
-          href="https://github.com/peter/cockpit-ai-agent"
+          href="https://github.com/ShaoRou459/CockpitServerAI"
           target="_blank"
           rel="noopener noreferrer"
           className="about-link"
