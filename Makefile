@@ -203,6 +203,6 @@ $(NODE_MODULES_TEST): package.json
 	rm -f package-lock.json
 	# unset NODE_ENV, skips devDependencies otherwise
 	env -u NODE_ENV npm install --ignore-scripts --legacy-peer-deps
-	env -u NODE_ENV npm prune
+	env -u NODE_ENV npm prune --legacy-peer-deps
 
 .PHONY: all clean install devel-install devel-uninstall print-version dist node-cache rpm prepare-check check vm print-vm
