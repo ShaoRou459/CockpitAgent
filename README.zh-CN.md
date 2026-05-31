@@ -42,25 +42,21 @@ https://github.com/user-attachments/assets/af7baa1a-23b7-4205-b454-8d88b15ba490
 
 ## 安装
 
-### ⚡ 快捷系统级安装（推荐）
+### ⚡ 快速自动安装
 
-无需 Node.js、npm 或编译！通过一条命令即可将预编译插件直接安装到服务器：
+无需 Node.js、npm 或编译！只需一条命令，即可直接将预编译好的插件安装到您的服务器上。安装脚本会自动检测您的用户权限，并选择合适的安装目录：
 
-```bash
-curl -sSL https://raw.githubusercontent.com/ShaoRou459/CockpitServerAI/master/install.sh | sudo bash
-```
+* **系统级安装（推荐 - 需要 root/sudo 权限）**：
+  ```bash
+  curl -sSL https://raw.githubusercontent.com/ShaoRou459/CockpitServerAI/master/install.sh | sudo bash
+  ```
+  *安装到 `/usr/share/cockpit/cockpit-ai-agent` 并配置文件系统权限。*
 
-此安装脚本将：
-1. 查询 GitHub API 获取最新发行标签。
-2. 下载预编译分发包（`cockpit-ai-agent-dist.tar.xz`）。
-3. 将文件安装到 `/usr/share/cockpit/cockpit-ai-agent` 并设置标准系统权限。
-
-#### 为特定用户安装（非 root）
-如果您没有 root 权限或只想为当前用户安装，请不带 `sudo` 运行脚本：
-```bash
-curl -sSL https://raw.githubusercontent.com/ShaoRou459/CockpitServerAI/master/install.sh | bash
-```
-这将自动以用户路径为目标：`~/.local/share/cockpit/cockpit-ai-agent`。
+* **用户本地安装（非 root - 仅为当前用户安装）**：
+  ```bash
+  curl -sSL https://raw.githubusercontent.com/ShaoRou459/CockpitServerAI/master/install.sh | bash
+  ```
+  *安装到您的本地用户目录 `~/.local/share/cockpit/cockpit-ai-agent`。*
 
 ## 安全与隐私
 

@@ -39,25 +39,21 @@ A real-time, side-by-side view showing the AI executing disk partition checks, p
 
 ## Installation
 
-### ⚡ Quick System-Wide Installation (Recommended)
+### ⚡ Quick Automatic Installation
 
-No Node.js, npm, or compilation is required! You can install the pre-compiled plugin directly onto your server with a single command:
+No Node.js, npm, or compilation is required! Install the pre-compiled plugin directly onto your server with a single command. The installer automatically detects your privileges and targets the appropriate directory:
 
-```bash
-curl -sSL https://raw.githubusercontent.com/ShaoRou459/CockpitServerAI/master/install.sh | sudo bash
-```
+* **System-Wide Installation (Recommended - requires root/sudo)**:
+  ```bash
+  curl -sSL https://raw.githubusercontent.com/ShaoRou459/CockpitServerAI/master/install.sh | sudo bash
+  ```
+  *Targets `/usr/share/cockpit/cockpit-ai-agent` and configures standard system-wide permissions.*
 
-This installer script will:
-1. Query the GitHub API for the latest release tag.
-2. Download the pre-compiled distribution bundle (`cockpit-ai-agent-dist.tar.xz`).
-3. Safely install the files under `/usr/share/cockpit/cockpit-ai-agent` and set standard system-wide permissions.
-
-#### Installation for a Specific User (Non-Root)
-If you don't have root privileges or want to install it only for your current user, run the script without `sudo`:
-```bash
-curl -sSL https://raw.githubusercontent.com/ShaoRou459/CockpitServerAI/master/install.sh | bash
-```
-This will automatically target your local user path: `~/.local/share/cockpit/cockpit-ai-agent`.
+* **User-Local Installation (Non-Root - installs for current user)**:
+  ```bash
+  curl -sSL https://raw.githubusercontent.com/ShaoRou459/CockpitServerAI/master/install.sh | bash
+  ```
+  *Targets your local user path `~/.local/share/cockpit/cockpit-ai-agent`.*
 
 ## Security & Privacy
 
