@@ -510,16 +510,19 @@ export const Application = () => {
         const safetyConfig = SAFETY_MODES[settings.safetyMode];
         const autoApproveLevels = safetyConfig.autoApprove;
 
-        // Get terminal context
+        // Get terminal context and CWD
         let terminalContext = "";
+        let terminalCwd = "";
         const handle = terminalHandlesRef.current[sessionId];
         if (handle) {
           terminalContext = handle.getVisibleText();
+          terminalCwd = handle.getCwd();
         }
 
         const response = await activeAgent.processMessage(content, {
           hostname,
           terminalContext,
+          terminalCwd,
           onAction: (action) => {
             // Check if this risk level should be auto-approved based on safety mode
             const riskLevel = action.risk_level as RiskLevel;

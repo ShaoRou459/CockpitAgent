@@ -23,6 +23,7 @@ export interface TerminalViewHandle {
   ) => Promise<{ output: string; exitCode: number; cwd: string }>;
   clear: () => void;
   getVisibleText: () => string;
+  getCwd: () => string;
 }
 
 interface TerminalViewProps {
@@ -54,6 +55,12 @@ export const TerminalView = forwardRef<TerminalViewHandle, TerminalViewProps>(
           return terminalRef.current.getVisibleText();
         }
         return "";
+      },
+      getCwd: () => {
+        if (terminalRef.current) {
+          return terminalRef.current.getCwd();
+        }
+        return "~";
       },
     }));
 

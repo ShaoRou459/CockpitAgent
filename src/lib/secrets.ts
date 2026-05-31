@@ -35,7 +35,7 @@ const SECRET_PATTERNS: SecretPattern[] = [
     },
     {
         name: 'sk_api_key',
-        pattern: /\bsk-[a-zA-Z0-9]{20,}/g,
+        pattern: /\bsk-[a-zA-Z0-9_\-]{20,}/g,
         description: 'SK API Key (OpenAI/Anthropic)'
     },
     {
@@ -47,6 +47,16 @@ const SECRET_PATTERNS: SecretPattern[] = [
         name: 'jwt_token',
         pattern: /eyJ[a-zA-Z0-9_-]*\.eyJ[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]*/g,
         description: 'JWT Token'
+    },
+    {
+        name: 'google_api_key',
+        pattern: /\bAIzaSy[a-zA-Z0-9_\-]{33}\b/g,
+        description: 'Google API Key'
+    },
+    {
+        name: 'stripe_api_key',
+        pattern: /\b(?:sk|rk)_(?:live|test)_[a-zA-Z0-9]{24,}/g,
+        description: 'Stripe API Key'
     },
 
     // AWS Credentials
@@ -94,6 +104,11 @@ const SECRET_PATTERNS: SecretPattern[] = [
         description: 'GitHub OAuth Token'
     },
     {
+        name: 'github_fine_grained_token',
+        pattern: /\bgithub_pat_[a-zA-Z0-9_]{82}/g,
+        description: 'GitHub Fine-Grained Personal Access Token'
+    },
+    {
         name: 'gitlab_token',
         pattern: /glpat-[a-zA-Z0-9\-]{20}/g,
         description: 'GitLab Personal Access Token'
@@ -104,6 +119,11 @@ const SECRET_PATTERNS: SecretPattern[] = [
         name: 'slack_token',
         pattern: /xox[baprs]-[a-zA-Z0-9\-]{10,}/g,
         description: 'Slack Token'
+    },
+    {
+        name: 'slack_webhook',
+        pattern: /https:\/\/hooks\.slack\.com\/services\/T[a-zA-Z0-9_]{8}\/B[a-zA-Z0-9_]{8}\/[a-zA-Z0-9_]{24}/g,
+        description: 'Slack Webhook URL'
     },
 
     // Generic high-entropy strings (likely secrets)

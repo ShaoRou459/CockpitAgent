@@ -26,6 +26,7 @@ type IntermediateResponseCallback = (response: string) => void;
 interface ProcessOptions {
     hostname: string;
     terminalContext?: string;
+    terminalCwd?: string;
     onAction: ActionCallback;
     onOutput: OutputCallback;
     onActionStarted?: ActionStartCallback;
@@ -90,17 +91,27 @@ export class AgentController {
         this.isAborted = false;
         const { hostname, onAction, onOutput, onActionStarted, onActionExecuted, onInteractiveCommand, onIntermediateResponse, onAssistantStream, executeCommand } = options;
 
+        // Synchronize agent CWD with the actual terminal CWD if available
+        if (options.terminalCwd && options.terminalCwd !== '~') {
+            this.currentDirectory = options.terminalCwd;
+        }
+
         // Add user message to history
         this.conversationHistory.push({
             role: 'user',
             content: userMessage
         });
 
+        // Redact secrets in the terminal context if secret redaction is enabled
+        const redactedTerminalContext = options.terminalContext
+            ? secretManager.scanAndRedact(options.terminalContext, 'terminal').redactedText
+            : undefined;
+
         // Build system prompt with current context
         const systemPrompt = this.buildSystemPrompt({
             hostname,
             cwd: this.currentDirectory,
-            terminalContext: options.terminalContext
+            terminalContext: redactedTerminalContext
         });
 
         try {
@@ -359,12 +370,40 @@ export class AgentController {
         this.currentDirectory = '~';
     }
 
+    /**
+     * Resolve a path relative to the terminal's active working directory
+     */
+    private resolvePath(path: string): string {
+        const substitutedPath = secretManager.substituteSecrets(path);
+
+        // If absolute path or relative to home
+        if (substitutedPath.startsWith('/') || substitutedPath.startsWith('~')) {
+            return substitutedPath;
+        }
+
+        // If relative to terminal CWD
+        if (this.currentDirectory && this.currentDirectory !== '~' && this.currentDirectory.startsWith('/')) {
+            let relativePath = substitutedPath;
+            if (relativePath.startsWith('./')) {
+                relativePath = relativePath.substring(2);
+            } else if (relativePath === '.') {
+                relativePath = '';
+            }
+
+            const baseDir = this.currentDirectory.endsWith('/')
+                ? this.currentDirectory
+                : this.currentDirectory + '/';
+            return baseDir + relativePath;
+        }
+
+        return substitutedPath;
+    }
+
     private async readFile(path: string, onOutput: OutputCallback): Promise<CommandResult> {
-        // Substitute any secret placeholders in the path
-        const actualPath = secretManager.substituteSecrets(path);
+        const actualPath = this.resolvePath(path);
 
         if (this.settings.debugMode && actualPath !== path) {
-            console.log('Secrets substituted in file_read path');
+            console.log(`Path resolved in file_read: ${path} -> ${actualPath}`);
         }
 
         onOutput(`\n📄 Reading: ${path}\n`);
@@ -405,12 +444,11 @@ export class AgentController {
     }
 
     private async writeFile(path: string, content: string, onOutput: OutputCallback): Promise<CommandResult> {
-        // Substitute any secret placeholders with actual values before writing
-        const actualPath = secretManager.substituteSecrets(path);
+        const actualPath = this.resolvePath(path);
         const actualContent = secretManager.substituteSecrets(content);
 
         if (this.settings.debugMode && (actualPath !== path || actualContent !== content)) {
-            console.log('Secrets substituted in file_write operation');
+            console.log('Secrets substituted or path resolved in file_write operation');
         }
 
         onOutput(`\n📝 Writing to: ${path}\n`);

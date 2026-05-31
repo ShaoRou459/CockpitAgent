@@ -56,6 +56,11 @@ export interface XTerminalHandle {
      * Get the visible text of the terminal screen
      */
     getVisibleText: () => string;
+
+    /**
+     * Get the globally tracked CWD of the terminal
+     */
+    getCwd: () => string;
 }
 
 interface XTerminalProps {
@@ -76,6 +81,10 @@ export const XTerminal = forwardRef<XTerminalHandle, XTerminalProps>(({ onReady 
         markerId: string;
         startIndex: number;
     } | null>(null);
+
+    // Globally tracked terminal CWD state and stream input buffer
+    const cwdRef = useRef<string>('~');
+    const slidingBufferRef = useRef<string>('');
 
     // Expose methods to parent
     useImperativeHandle(ref, () => ({
@@ -155,6 +164,10 @@ export const XTerminal = forwardRef<XTerminalHandle, XTerminalProps>(({ onReady 
                 lines.pop();
             }
             return lines.join('\n');
+        },
+
+        getCwd: () => {
+            return cwdRef.current;
         }
     }));
 
@@ -255,6 +268,20 @@ export const XTerminal = forwardRef<XTerminalHandle, XTerminalProps>(({ onReady 
                 // DO NOT intercept or strip data with regex! This breaks readline cursor synchronization.
                 // Write exactly what bash sends to maintaining 100% 1:1 state mapping.
                 terminal.write(data);
+
+                // Update sliding buffer and extract CWD globally
+                slidingBufferRef.current = (slidingBufferRef.current + data).slice(-500);
+                const oscPattern = /\x1b\]1337;AI_CMD_STATUS=\d+\|([^\x07]+)\x07/;
+                const match = oscPattern.exec(slidingBufferRef.current);
+                if (match) {
+                    const parsedCwd = match[1];
+                    if (parsedCwd && parsedCwd !== cwdRef.current) {
+                        cwdRef.current = parsedCwd;
+                        if (isDebugMode()) {
+                            console.log('[XTerminal] Globally captured CWD:', parsedCwd);
+                        }
+                    }
+                }
 
                 // Check for command completion using the invisible OSC emitted by PROMPT_COMMAND
                 if (commandResolverRef.current) {
