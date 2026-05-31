@@ -77,7 +77,7 @@ fi
 
 # 4. Download pre-compiled assets
 TMP_DIR=$(mktemp -d)
-TARBALL_URL="https://github.com/ShaoRou459/CockpitServerAI/releases/download/${TAG_NAME}/cockpit-ai-agent-dist.tar.xz"
+TARBALL_URL="https://github.com/ShaoRou459/CockpitServerAI/releases/download/${TAG_NAME}/cockpit-ai-agent-${TAG_NAME}.tar.xz"
 
 # Cleanup temporary folder on exit
 trap 'rm -rf "$TMP_DIR"' EXIT
