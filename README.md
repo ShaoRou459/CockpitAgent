@@ -23,7 +23,7 @@
 
 ## Demo
 
-<video src="demo.mp4" width="100%" controls></video>
+https://github.com/user-attachments/assets/b480255c-60fb-48a2-ac13-9d84bee8d4a2
 
 ---
 
