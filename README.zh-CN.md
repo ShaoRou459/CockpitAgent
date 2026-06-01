@@ -196,3 +196,4 @@ cockpit-ai-agent/
 - [Cockpit Project](https://cockpit-project.org/) 提供的优秀服务器管理平台
 - [PatternFly](https://www.patternfly.org/) 提供的 React 组件库
 - [xterm.js](https://xtermjs.org/) 提供的终端模拟
+- [Linux.do](https://linux.do) 社区及与帮助和构想！
