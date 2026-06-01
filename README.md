@@ -194,3 +194,4 @@ This project is licensed under the LGPL-2.1 License - see the [LICENSE](LICENSE)
 - [Cockpit Project](https://cockpit-project.org/) for the excellent server management platform
 - [PatternFly](https://www.patternfly.org/) for the React component library
 - [xterm.js](https://xtermjs.org/) for terminal emulation
+- [Linux.Do](https://linux.do) for communal support
