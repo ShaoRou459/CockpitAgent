@@ -38,7 +38,7 @@ https://github.com/user-attachments/assets/af7baa1a-23b7-4205-b454-8d88b15ba490
 
 ### 2. 自主命令执行
 实时分屏视图展示 AI 执行磁盘分区检查、解析结果并格式化存储摘要——同时与完全交互式终端同步实时输出。
-![智能体执行界面](inuse.png)
+<img width="2103" height="1547" alt="image" src="https://github.com/user-attachments/assets/c3d63ac2-7e39-4b05-a9dd-65096bdc17ae" />
 
 ## 安装
 
