@@ -69,6 +69,8 @@ You can configure the agent to use local AI models (via Ollama, vLLM, etc.) ensu
 ### 🔒 Automatic Secret Redaction
 Passwords, API keys, and tokens in command outputs are automatically replaced with placeholders (e.g., `<SECRET_1>`) before reaching the AI. The AI can use these placeholders to write commands, and the agent securely swaps the real secrets back in just before execution—ensuring credentials never leave your server.
 
+![Secret Redaction](assets/redact.png)
+
 ### 🚦 Risk Levels & YOLO Mode
 Every generated command is evaluated for risk before execution. Users can choose from multiple execution modes (Paranoid, Cautious, Moderate, YOLO, and Full YOLO) depending on their security preferences:
 
