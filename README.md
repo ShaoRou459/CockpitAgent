@@ -100,18 +100,6 @@ Every command executed by the agent is logged, providing a clear paper trail of 
 | **Google Gemini** | [AI Studio](https://makersuite.google.com/app/apikey) | Supports Gemini 3.5 Flash, 3.1 Pro, etc. |
 | **Custom** | Your provider | Any OpenAI-compatible API |
 
-## Usage
-
-### Basic Commands
-
-Simply type what you want to do in natural language:
-
-- "Check disk space usage"
-- "Show me the last 50 lines of /var/log/syslog"
-- "Restart nginx"
-- "What services are failing?"
-- "Install htop"
-
 ## Architecture
 
 ![Architecture Diagram](architecture.png)
