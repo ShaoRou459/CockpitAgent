@@ -397,6 +397,20 @@ ln -s $(pwd)/dist ~/.local/share/cockpit/cockpit-ai-agent
 sudo ln -s $(pwd)/dist /usr/share/cockpit/cockpit-ai-agent
 ```
 
+### Releasing
+To trigger a new release build via GitHub Actions:
+1. Update the version in `package.json` and any relevant README badges.
+2. Commit the version bump.
+3. Create a git tag for the release (e.g., `v1.1.0`). The Makefile supports both lightweight and annotated tags.
+   ```bash
+   git tag -a v1.1.0 -m "Release v1.1.0"
+   ```
+4. Push the commit and the tags to the repository:
+   ```bash
+   git push --follow-tags
+   ```
+5. The `.github/workflows/release.yml` workflow will automatically build the distribution tarball (`cockpit-ai-agent-<tag>.tar.xz`) and create a GitHub Release.
+
 ---
 
 ## File Reference
