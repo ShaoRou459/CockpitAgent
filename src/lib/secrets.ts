@@ -81,21 +81,23 @@ const SECRET_PATTERNS: SecretPattern[] = [
     // Database URLs with passwords
     {
         name: 'db_connection',
-        pattern: /(?:mysql|postgres|postgresql|mongodb|redis|amqp):\/\/[^:]+:([^@]+)@[^\s'"]+/gi,
+        // Match up to the last @ before the host to correctly extract passwords even if they contain special characters
+        pattern: /(?:mysql|postgres|postgresql|mongodb|mongodb\+srv|redis|amqp):\/\/[^:]*:?(.*)@[^'"\s]+?/gi,
         description: 'Database Password'
     },
 
     // Generic Password patterns
     {
         name: 'password_field',
-        pattern: /(?:password|passwd|pwd|secret)['":\s=]*['"]?([^\s'"]{8,})['";\s]?/gi,
+        // Require explicit assignment (= or :) to avoid matching variable names like AWS_SECRET_ACCESS_KEY
+        pattern: /(?:password|passwd|pwd|secret)[a-zA-Z0-9_-]*\s*[:=]\s*['"]?([^\s'"]{8,})['";\s]?/gi,
         description: 'Password'
     },
 
     // GitHub/GitLab tokens
     {
         name: 'github_token',
-        pattern: /ghp_[a-zA-Z0-9]{36}/g,
+        pattern: /gh[pous]_[a-zA-Z0-9]{36}/g,
         description: 'GitHub Personal Access Token'
     },
     {
@@ -122,8 +124,45 @@ const SECRET_PATTERNS: SecretPattern[] = [
     },
     {
         name: 'slack_webhook',
-        pattern: /https:\/\/hooks\.slack\.com\/services\/T[a-zA-Z0-9_]{8}\/B[a-zA-Z0-9_]{8}\/[a-zA-Z0-9_]{24}/g,
+        pattern: /https:\/\/hooks\.slack\.com\/services\/T[a-zA-Z0-9_]{8,}\/B[a-zA-Z0-9_]{8,}\/[a-zA-Z0-9_]{24}/g,
         description: 'Slack Webhook URL'
+    },
+
+    // NEW PROVIDER TOKENS
+    {
+        name: 'do_pat_token',
+        pattern: /dop_v1_[a-fA-F0-9]{64}/g,
+        description: 'DigitalOcean PAT'
+    },
+    {
+        name: 'vercel_token',
+        pattern: /vcp_[a-zA-Z0-9]{24}/g,
+        description: 'Vercel Access Token'
+    },
+    {
+        name: 'docker_hub_pat',
+        pattern: /dckr_pat_[a-zA-Z0-9_-]{35,}/g,
+        description: 'Docker Hub PAT'
+    },
+    {
+        name: 'npm_token',
+        pattern: /npm_[a-zA-Z0-9_-]{36,}/g,
+        description: 'NPM Token'
+    },
+    {
+        name: 'sendgrid_api_key',
+        pattern: /SG\.[a-zA-Z0-9_-]{22}\.[a-zA-Z0-9_-]{43}/g,
+        description: 'SendGrid API Key'
+    },
+    {
+        name: 'cloudflare_origin_ca',
+        pattern: /v1\.0-[a-fA-F0-9]{24}-[a-fA-F0-9]{130,}/g,
+        description: 'Cloudflare Origin CA'
+    },
+    {
+        name: 'supabase_url',
+        pattern: /https:\/\/supabase\.co\/[a-zA-Z0-9]{15,}/g,
+        description: 'Supabase URL'
     },
 
     // Generic high-entropy strings (likely secrets)

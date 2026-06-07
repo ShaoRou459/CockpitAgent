@@ -1,4 +1,4 @@
-<img src="logo-text.png" alt="Cockpit Agent Logo" width="450" />
+<img src="assets/logo-text.png" alt="Cockpit Agent Logo" width="450" />
 
 ### An AI-powered terminal assistant plugin for [Cockpit](https://cockpit-project.org/), the web-based Linux server management interface.
 
@@ -13,11 +13,11 @@
 
 ## Features
 
+- 💻 **Interactive Browser Terminal** - Every AI command is visible in a real-time terminal. You can watch, interact, or take over instantly (e.g., entering sudo passwords or stopping commands) to ensure you remain in control.
 - 🤖 **Multi-Provider AI Support** - Choose between top-tier models from OpenAI, Google Gemini, or compatible providers to suit your specific administration needs and budget.
 - ⚡ **Autonomous Agentic Control** - Let the AI handle complex workflows by executing sequences of commands, analyzing outputs, and iterating until your goal is seamlessly achieved.
 - 🛡️ **Intelligent Safety Controls** - Execute commands with confidence using customizable risk-based safety modes that prevent accidental or malicious system changes.
 - 🔒 **Automatic Secret Protection** - Keep your sensitive data secure with automatic, on-the-fly detection and redaction of passwords, API keys, and private tokens.
-- 💻 **Interactive Browser Terminal** - Interact directly with your server through a fully-featured terminal environment that natively supports interactive tools like vim, ssh, and sudo.
 
 ---
 
@@ -34,13 +34,12 @@ https://github.com/user-attachments/assets/b480255c-60fb-48a2-ac13-9d84bee8d4a2
 
 ### 1. Dashboard & Quick Actions
 The agent landing screen provides interactive shortcuts to get started instantly with standard server operations.
-![Dashboard UI](homescreen.png)
+![Dashboard UI](assets/homescreen.png)
 
 ### 2. Autonomous Command Execution
 A real-time, side-by-side view showing the AI executing disk partition checks, parsing results, and formatting a clear storage summary—all while syncing live outputs with a fully interactive terminal.
 <img width="2103" height="1547" alt="image" src="https://github.com/user-attachments/assets/c3d63ac2-7e39-4b05-a9dd-65096bdc17ae" />
 
-)
 
 ## Installation
 
@@ -68,12 +67,12 @@ Since this tool has direct access to your server, we've built in multiple layers
 You can configure the agent to use local AI models (via Ollama, vLLM, etc.) ensuring that your server's data never leaves your internal network.
 
 ### 🔒 Automatic Secret Redaction
-The agent actively scans all command outputs and automatically redacts sensitive information on the fly. Passwords, API keys, and private tokens are replaced with referenceable placeholders (e.g., `<SECRET_1>`) before being sent to the AI provider. The AI can still write commands using these placeholders, and the agent will safely substitute the real secrets back in right before execution—meaning your credentials stay strictly local while the AI still gets the job done.
+Passwords, API keys, and tokens in command outputs are automatically replaced with placeholders (e.g., `<SECRET_1>`) before reaching the AI. The AI can use these placeholders to write commands, and the agent securely swaps the real secrets back in just before execution—ensuring credentials never leave your server.
 
 ### 🚦 Risk Levels & YOLO Mode
 Every generated command is evaluated for risk before execution. Users can choose from multiple execution modes (Paranoid, Cautious, Moderate, YOLO, and Full YOLO) depending on their security preferences:
 
-![Mode Chooser](modechooser.png)
+![Mode Chooser](assets/modechooser.png)
 
 | Level | Examples | Default Behavior |
 |-------|----------|------------------|
@@ -100,9 +99,24 @@ Every command executed by the agent is logged, providing a clear paper trail of 
 | **Google Gemini** | [AI Studio](https://makersuite.google.com/app/apikey) | Supports Gemini 3.5 Flash, 3.1 Pro, etc. |
 | **Custom** | Your provider | Any OpenAI-compatible API |
 
+### Settings Overview
+
+The settings panel allows you to customize the agent's behavior, safety limits, and appearance:
+
+| Setting Category | Description |
+|------------------|-------------|
+| **Provider & Models** | Set AI provider, API key, model, and custom Base URL (e.g., Ollama). |
+| **Safety Mode** | AI autonomy level, from **Paranoid** (manual approval) to **Full YOLO** (auto-run). |
+| **Resource Limits** | Max tokens, temperature, and max autonomous loop iterations per task. |
+| **Output Truncation** | Max characters of terminal output sent to AI to prevent context overflow. |
+| **Secret Redaction** | Auto-mask passwords and API keys in terminal output before sending to AI. |
+| **Command Blocklist** | Custom list of destructive commands (e.g., `rm -rf /`) permanently blocked. |
+| **Audit & Debug** | Toggle command logging and debug mode. |
+| **UI Preferences** | Light/Dark theme and interface language. |
+
 ## Architecture
 
-![Architecture Diagram](architecture.png)
+![Architecture Diagram](assets/architecture.png)
 
 ## 🛠️ Development & Source Setup
 

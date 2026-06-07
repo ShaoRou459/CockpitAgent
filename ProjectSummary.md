@@ -101,7 +101,7 @@ CockpitServerAI/
 
 ## Architecture Overview
 
-![Architecture Overview Diagram](project_summary_architecture.png)
+![Architecture Overview Diagram](assets/project_summary_architecture.png)
 
 ---
 
