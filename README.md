@@ -38,7 +38,8 @@ The agent landing screen provides interactive shortcuts to get started instantly
 
 ### 2. Autonomous Command Execution
 A real-time, side-by-side view showing the AI executing disk partition checks, parsing results, and formatting a clear storage summary—all while syncing live outputs with a fully interactive terminal.
-![Agent Execution UI](<img width="2103" height="1547" alt="image" src="https://github.com/user-attachments/assets/28c38bfc-0e41-491d-9abb-be08261e83c0" />
+<img width="2103" height="1547" alt="image" src="https://github.com/user-attachments/assets/c3d63ac2-7e39-4b05-a9dd-65096bdc17ae" />
+
 )
 
 ## Installation
