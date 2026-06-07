@@ -597,7 +597,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       <div className="about-header">
         <img src={logoTextUrl} alt="Cockpit Agent" className="about-logo-img" />
         <div className="about-title-block">
-          <span className="about-version">v1.0.0</span>
+          <span className="about-version">v1.1.0</span>
         </div>
       </div>
 

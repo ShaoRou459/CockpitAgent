@@ -4,7 +4,7 @@
 
 CockpitServerAI is a **Cockpit Web Plugin** that integrates AI-powered command-line assistance into the Cockpit Linux server management interface. It provides a chat-based interface where users can interact with AI assistants (OpenAI, Google Gemini, or compatible providers) to execute system administration tasks on Linux servers.
 
-**Version**: 1.0.0
+**Version**: 1.1.0
 **Minimum Cockpit Version**: 137
 **Node.js Requirement**: 18+
 
