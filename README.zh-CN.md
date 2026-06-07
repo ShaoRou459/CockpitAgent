@@ -84,6 +84,8 @@ https://github.com/user-attachments/assets/af7baa1a-23b7-4205-b454-8d88b15ba490
 
 默认情况下，**所有**命令都需要显式用户批准。您可以选择在设置中启用 **YOLO 模式**，以跳过对**低**风险命令的批准。
 
+![危险提示](assets/criticalprompt.png)
+
 ### 📝 审计日志
 智能体执行的每条命令都会被记录，提供所有系统修改的清晰追踪记录。
 

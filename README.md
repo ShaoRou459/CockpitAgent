@@ -85,6 +85,8 @@ Every generated command is evaluated for risk before execution. Users can choose
 
 By default, **all** commands require explicit user approval. You can optionally enable **YOLO Mode** in the settings to bypass approval for **Low** risk commands.
 
+![Critical Prompt](assets/criticalprompt.png)
+
 ### 📝 Audit Logging
 Every command executed by the agent is logged, providing a clear paper trail of all system modifications.
 
