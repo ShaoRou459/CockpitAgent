@@ -3,7 +3,7 @@ PACKAGE_NAME := $(shell awk '/"name":/ {gsub(/[",]/, "", $$2); print $$2}' packa
 # Our RPM names are usually prefixed with "cockpit-".
 # If the package name already starts with "cockpit-", avoid double-prefixing.
 RPM_NAME := $(if $(filter cockpit-%,$(PACKAGE_NAME)),$(PACKAGE_NAME),cockpit-$(PACKAGE_NAME))
-VERSION := $(shell T=$$(git describe 2>/dev/null) || T=1; echo $$T | tr '-' '.')
+VERSION := $(shell T=$$(git describe --tags 2>/dev/null) || T=1; echo $$T | tr '-' '.')
 ifeq ($(TEST_OS),)
 TEST_OS = centos-9-stream
 endif
