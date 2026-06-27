@@ -573,11 +573,17 @@ IMPORTANT: If you have a plan to execute commands, DO NOT just state the plan in
 - Current directory: ${context.cwd || '/root'}
 - Timestamp: ${new Date().toISOString()}${terminalInfo}
 
+## Reasoning Requirement
+Before writing any natural language response or executing any actions, you MUST analyze the user's request and the current context, and write down your reasoning process. Wrap your entire reasoning/thought process in <think>...</think> tags at the very beginning of your response.
+
 ## Response Format
-Answer the user naturally. You can use markdown styling, code blocks, and multi-paragraph formatting.
+After your reasoning block, answer the user naturally. You can use markdown styling, code blocks, and multi-paragraph formatting.
 If you need to execute commands, file operations, or services, append them at the very end of your response wrapped in a \`\`\`json block.
 
 Example response:
+<think>
+The user wants to check the operating system details. I will execute the 'cat /etc/os-release' command, which is a low-risk informational command, to retrieve the OS configuration.
+</think>
 I will check the operating system details for you now!
 \`\`\`json
 [
@@ -591,6 +597,7 @@ I will check the operating system details for you now!
 \`\`\`
 
 CRITICAL FORMATTING RULES:
+- Start your response with <think>...</think> enclosing your reasoning.
 - The \`\`\`json block must contain an Array of action objects.
 - If you don't need to perform any commands, simply omit the json block entirely.
 

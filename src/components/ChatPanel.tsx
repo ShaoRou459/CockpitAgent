@@ -237,7 +237,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   if (!isConfigured) {
     return (
       <Card
-        style={{ height: "100%", display: "flex", flexDirection: "column" }}
+        style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}
       >
         <CardBody
           style={{
@@ -272,7 +272,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   }
 
   return (
-    <Card style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    <Card style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
       {/* Messages Area */}
       <CardBody
         style={{
@@ -735,6 +735,32 @@ const MessageBubble: React.FC<{ message: Message }> = ({ message }) => {
   const isSystem = message.role === "system";
   const isError = message.isError;
 
+  // Intercept click on the thought-process summary to handle smooth collapse animation
+  const handleMessageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    const summary = target.closest('.thought-process summary');
+    if (!summary) return;
+
+    const details = summary.parentElement as HTMLDetailsElement;
+    if (!details) return;
+
+    e.preventDefault(); // Prevent instant browser toggle
+
+    if (details.open) {
+      // Transition to closed: add collapsing class first
+      details.classList.add('collapsing');
+      
+      // Wait for the collapse animation to finish, then unset the open attribute
+      setTimeout(() => {
+        details.open = false;
+        details.classList.remove('collapsing');
+      }, 250); // Matches the 0.25s animation duration
+    } else {
+      // Opening: just set open (CSS handles fade/slide expand)
+      details.open = true;
+    }
+  };
+
   // Special rendering for action messages - use compact view
   if (isAction && message.action) {
     return <ActionBubble message={message} />;
@@ -808,7 +834,10 @@ const MessageBubble: React.FC<{ message: Message }> = ({ message }) => {
   };
 
   return (
-    <div className={`message-bubble ${message.role} ${isError ? "error" : ""}`}>
+    <div 
+      className={`message-bubble ${message.role} ${isError ? "error" : ""}`}
+      onClick={handleMessageClick}
+    >
       <div className="message-content">{renderContent()}</div>
       <div className="message-time">
         {message.timestamp.toLocaleTimeString()}

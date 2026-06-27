@@ -3,7 +3,7 @@
 ### 基于 AI 的 Cockpit 终端助手插件，用于 [Cockpit](https://cockpit-project.org/) Web 版 Linux 服务器管理界面。
 
 [![Cockpit Plugin](https://img.shields.io/badge/Cockpit-Plugin-E00?style=flat-square&logo=linux&logoColor=white)](https://cockpit-project.org/)
-[![Version](https://img.shields.io/badge/Version-1.1.0-8A2BE2?style=flat-square)](package.json)
+[![Version](https://img.shields.io/badge/Version-1.2.0-8A2BE2?style=flat-square)](package.json)
 [![License](https://img.shields.io/badge/License-LGPL--2.1-555555?style=flat-square)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
