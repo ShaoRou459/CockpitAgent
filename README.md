@@ -18,6 +18,7 @@
 - ⚡ **Autonomous Agentic Control** - Let the Agent handle complex workflows by executing sequences of commands, analyzing outputs, and iterating until your goal is seamlessly achieved.
 - 🛡️ **Intelligent Safety Controls** - Execute commands with confidence using customizable risk-based safety modes that prevent accidental or malicious system changes.
 - 🔒 **Automatic Secret Protection** - Keep your sensitive data secure with automatic, on-the-fly detection and redaction of passwords, API keys, and private tokens.
+- 🛠️ **Utility Toolbar** - Access history, debug logs, and toggle light/dark mode instantly from the top-right toolbar.
   
 
 ## Screenshots & Demo
