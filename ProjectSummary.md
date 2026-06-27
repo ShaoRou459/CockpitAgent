@@ -4,7 +4,7 @@
 
 CockpitServerAI is a **Cockpit Web Plugin** that integrates AI-powered command-line assistance into the Cockpit Linux server management interface. It provides a chat-based interface where users can interact with AI assistants (OpenAI, Google Gemini, or compatible providers) to execute system administration tasks on Linux servers.
 
-**Version**: 1.1.0
+**Version**: 1.2.0
 **Minimum Cockpit Version**: 137
 **Node.js Requirement**: 18+
 
@@ -401,9 +401,9 @@ sudo ln -s $(pwd)/dist /usr/share/cockpit/cockpit-ai-agent
 To trigger a new release build via GitHub Actions:
 1. Update the version in `package.json` and any relevant README badges.
 2. Commit the version bump.
-3. Create a git tag for the release (e.g., `v1.1.0`). The Makefile supports both lightweight and annotated tags.
+3. Create a git tag for the release (e.g., `v1.2.0`). The Makefile supports both lightweight and annotated tags.
    ```bash
-   git tag -a v1.1.0 -m "Release v1.1.0"
+   git tag -a v1.2.0 -m "Release v1.2.0"
    ```
 4. Push the commit and the tags to the repository:
    ```bash

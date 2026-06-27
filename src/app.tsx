@@ -111,7 +111,7 @@ export const Application = () => {
   const [apiError, setApiError] = useState<ApiError | null>(null);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [lastUserMessage, setLastUserMessage] = useState<string>("");
-  const [chatPanelWidth, setChatPanelWidth] = useState(50); // percentage
+  const [chatPanelWidth, setChatPanelWidth] = useState(60); // percentage (3:2 split)
   const [isResizing, setIsResizing] = useState(false);
   const [safetyDropdownOpen, setSafetyDropdownOpen] = useState(false);
 
@@ -850,7 +850,7 @@ export const Application = () => {
 
   // Terminal toggle via shortcut
   const toggleTerminal = useCallback(() => {
-    setChatPanelWidth((prev) => (prev === 100 ? 50 : 100));
+    setChatPanelWidth((prev) => (prev === 100 ? 60 : 100));
   }, []);
 
   // Resize handlers for draggable divider
@@ -862,24 +862,43 @@ export const Application = () => {
     [],
   );
 
-  const handleResize = useCallback((clientX: number) => {
+  const handleResize = useCallback((clientX: number, clientY?: number) => {
     if (!contentRef.current) return;
 
     const containerRect = contentRef.current.getBoundingClientRect();
-    const containerWidth = containerRect.width;
-    const relativeX = clientX - containerRect.left;
+    const isMobile = window.innerWidth <= 992;
 
-    // Calculate percentage
-    let percentage = (relativeX / containerWidth) * 100;
+    if (isMobile && clientY !== undefined) {
+      const containerHeight = containerRect.height;
+      const relativeY = clientY - containerRect.top;
 
-    // Snap to 100% (hidden terminal) if dragged past 90%
-    if (percentage > 90) {
-      percentage = 100;
+      // Calculate percentage for vertical split (height)
+      let percentage = (relativeY / containerHeight) * 100;
+
+      // Snap to 100% (hidden terminal) if dragged past 90%
+      if (percentage > 90) {
+        percentage = 100;
+      } else {
+        percentage = Math.max(25, Math.min(85, percentage));
+      }
+
+      setChatPanelWidth(percentage);
     } else {
-      percentage = Math.max(25, Math.min(85, percentage));
-    }
+      const containerWidth = containerRect.width;
+      const relativeX = clientX - containerRect.left;
 
-    setChatPanelWidth(percentage);
+      // Calculate percentage for horizontal split (width)
+      let percentage = (relativeX / containerWidth) * 100;
+
+      // Snap to 100% (hidden terminal) if dragged past 90%
+      if (percentage > 90) {
+        percentage = 100;
+      } else {
+        percentage = Math.max(25, Math.min(85, percentage));
+      }
+
+      setChatPanelWidth(percentage);
+    }
   }, []);
 
   const handleResizeEnd = useCallback(() => {
@@ -891,12 +910,12 @@ export const Application = () => {
     if (!isResizing) return;
 
     const handleMouseMove = (e: MouseEvent) => {
-      handleResize(e.clientX);
+      handleResize(e.clientX, e.clientY);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
-        handleResize(e.touches[0].clientX);
+        handleResize(e.touches[0].clientX, e.touches[0].clientY);
       }
     };
 
@@ -1260,8 +1279,9 @@ export const Application = () => {
           className={`resize-divider ${isResizing ? "resize-divider--active" : ""}`}
           onMouseDown={handleResizeStart}
           onTouchStart={handleResizeStart}
+          onDoubleClick={toggleTerminal}
           role="separator"
-          aria-orientation="vertical"
+          aria-orientation={window.innerWidth <= 992 ? "horizontal" : "vertical"}
           aria-label={_("Resize panels")}
           tabIndex={0}
         >

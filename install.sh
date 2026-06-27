@@ -64,7 +64,7 @@ if [ -z "$RELEASE_JSON" ] || echo "$RELEASE_JSON" | grep -q "Not Found"; then
     
     if [ -z "$TAG_NAME" ]; then
         # Hardcoded fallback as a last resort
-        TAG_NAME="1.1.0"
+        TAG_NAME="1.2.0"
         echo -e "${YELLOW}Fallback to default version: ${TAG_NAME}${NC}"
     else
         echo -e "Found scraped release tag: ${GREEN}${TAG_NAME}${NC}"
@@ -74,7 +74,7 @@ else
     TAG_NAME=$(echo "$RELEASE_JSON" | grep -Po '"tag_name": *\K"[^"]*"' | tr -d '"' || true)
     
     if [ -z "$TAG_NAME" ]; then
-        TAG_NAME="1.1.0"
+        TAG_NAME="1.2.0"
         echo -e "${YELLOW}Could not parse tag from JSON. Fallback: ${TAG_NAME}${NC}"
     else
         echo -e "Found latest release tag: ${GREEN}${TAG_NAME}${NC}"

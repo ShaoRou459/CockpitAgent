@@ -603,24 +603,90 @@ export class AIClient {
             thought = thoughtMatch[1].trim();
         }
 
-        // Extract actions
+        // Helper to validate if an array contains valid action objects
+        const isValidActionArray = (parsed: any): boolean => {
+            if (!Array.isArray(parsed)) return false;
+            if (parsed.length === 0) return true;
+            return parsed.every(item => 
+                item && typeof item === 'object' && typeof item.type === 'string' &&
+                ['command', 'file_read', 'file_write', 'service', 'ask_user'].includes(item.type)
+            );
+        };
+
+        // Helper to check if a block content is likely to be an actions block
+        const isLikelyActionsBlock = (blockContent: string, isJsonLanguage: boolean, isLastBlock: boolean): boolean => {
+            const trimmed = blockContent.trim();
+            if (!trimmed.startsWith('[')) return false;
+            const hasKeywords = trimmed.includes('"type"') && (
+                trimmed.includes('"command"') || 
+                trimmed.includes('"path"') || 
+                trimmed.includes('"service"') || 
+                trimmed.includes('"question"')
+            );
+            return hasKeywords && (isJsonLanguage || isLastBlock);
+        };
+
+        // Find all markdown code blocks with their start/end indices
+        const codeBlockRegex = /```(json|[a-zA-Z0-9_-]+)?\s*([\s\S]*?)```/gi;
+        const blocks: {
+            fullText: string;
+            language: string;
+            content: string;
+            index: number;
+            endIndex: number;
+        }[] = [];
+        let match;
+        while ((match = codeBlockRegex.exec(content)) !== null) {
+            blocks.push({
+                fullText: match[0],
+                language: match[1] || '',
+                content: match[2],
+                index: match.index,
+                endIndex: match.index + match[0].length
+            });
+        }
+
+        // Extract actions and identify the actions block to strip
         let actions: any[] = [];
-        // Match only blocks explicitly marked as json, or the last code block in the response
-        const jsonMatch = content.match(/```json\s*([\s\S]*?)```/i) || content.match(/```\s*([\s\S]*?)```[^`]*$/);
-        if (jsonMatch) {
+        let actionsBlockIndex = -1;
+
+        for (let i = blocks.length - 1; i >= 0; i--) {
+            const block = blocks[i];
+            
+            // 1. Try to parse as valid actions
             try {
-                const parsed = JSON.parse(jsonMatch[1].trim());
-                if (Array.isArray(parsed)) {
+                const parsed = JSON.parse(block.content.trim());
+                if (isValidActionArray(parsed)) {
                     actions = parsed;
+                    actionsBlockIndex = i;
+                    break;
                 }
-            } catch (e) {
-                debugLogger.log('warn', 'ai-parse', 'Failed to parse JSON actions block', e instanceof Error ? e.message : String(e));
+            } catch {
+                // Ignore parse errors here, we will fallback to isLikelyActionsBlock
+            }
+
+            // 2. If it didn't parse successfully, check if it's a likely actions block that is malformed
+            const isLast = i === blocks.length - 1;
+            const isJson = block.language.toLowerCase() === 'json';
+            if (isLikelyActionsBlock(block.content, isJson, isLast)) {
+                actionsBlockIndex = i;
+                actions = [];
+                // Log the JSON parse warning
+                try {
+                    JSON.parse(block.content.trim());
+                } catch (e) {
+                    debugLogger.log('warn', 'ai-parse', 'Failed to parse JSON actions block', e instanceof Error ? e.message : String(e));
+                }
+                break;
             }
         }
 
-        // Clean response by stripping json
-        let responseText = content.replace(/```(?:json)?\s*[\s\S]*?```/i, '').trim();
-        // Note: We no longer strip <thought> or <think> tags, so the UI can render the reasoning process.
+        // Clean response by stripping the identified actions block only
+        let responseText = content;
+        if (actionsBlockIndex !== -1) {
+            const block = blocks[actionsBlockIndex];
+            responseText = (content.substring(0, block.index) + content.substring(block.endIndex)).trim();
+        }
 
         const result: AIResponse = {
             thought,

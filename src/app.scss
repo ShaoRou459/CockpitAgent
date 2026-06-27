@@ -1440,52 +1440,58 @@ body.resizing * {
 .chat-messages {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
 }
 
 /* Message bubble base styles */
 .message-bubble {
-    padding: 10px 14px;
-    border-radius: 8px;
+    padding: 12px 16px;
+    border-radius: 6px;
     max-width: 85%;
     word-wrap: break-word;
     animation: msg-slide-in 0.25s ease-out both;
 }
 
-/* User messages - Cockpit blue */
+/* User messages - Cockpit purple */
 .message-bubble.user {
     align-self: flex-end;
-    background-color: #ab69d3;
+    background-color: var(--ai-message-user-bg);
     color: white;
-    border-bottom-right-radius: 2px;
+    border-bottom-right-radius: 0px;
 }
 
 /* Assistant messages - light theme */
 .message-bubble.assistant {
-    align-self: flex-start;
+    align-self: stretch;
+    max-width: 100%;
     background-color: var(--ai-message-assistant-bg);
     border: 1px solid var(--ai-message-assistant-border);
-    border-bottom-left-radius: 2px;
+    border-bottom-left-radius: 0px;
     color: var(--ai-text-color);
 }
 
 /* Error messages */
 .message-bubble.error {
+    align-self: stretch;
+    max-width: 100%;
     background-color: #c9190b;
     color: white;
 }
 
 /* System messages (Warnings / Aborted requests) */
 .message-bubble.system {
-    align-self: flex-start;
+    align-self: stretch;
+    max-width: 100%;
     background-color: rgba(240, 171, 0, 0.08);
     border: 1px solid rgba(240, 171, 0, 0.4);
-    border-bottom-left-radius: 2px;
+    border-bottom-left-radius: 0px;
     color: #7a5200;
 }
 
 /* Processing indicator */
 .message-bubble.processing {
+    align-self: stretch;
+    max-width: 100%;
     background-color: var(--ai-message-assistant-bg);
     border: 1px solid var(--ai-message-assistant-border);
     color: var(--ai-text-muted);
@@ -1611,18 +1617,31 @@ body.resizing * {
 
     .thought-process {
         display: block;
-        margin: 8px 0;
-        padding: 12px;
-        background-color: var(--ai-bg-color);
-        border-left: 4px solid var(--ai-primary-color);
+        margin: 0 0 12px 0;
+        padding: 0;
         color: var(--ai-text-muted);
-        font-size: 0.9em;
-        border-radius: 4px;
+        font-size: 0.875rem;
+
+        p, ul, ol {
+            margin: 0 0 6px 0;
+            line-height: 1.45;
+            
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        li {
+            margin: 2px 0;
+        }
 
         summary {
+            font-family: 'RedHatMono', 'Liberation Mono', monospace;
             font-weight: 600;
             color: var(--ai-primary-color);
-            font-size: 1.05em;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
             cursor: pointer;
             margin-bottom: 4px;
             user-select: none;
@@ -1633,10 +1652,24 @@ body.resizing * {
             }
         }
         
-        &[open] summary {
-            margin-bottom: 12px;
-            border-bottom: 1px solid var(--ai-border-color);
-            padding-bottom: 8px;
+        &[open] {
+            summary {
+                margin-bottom: 12px;
+                border-bottom: 1px solid var(--ai-border-color);
+                padding-bottom: 8px;
+            }
+
+            & > *:not(summary) {
+                animation: thought-expand 0.25s ease-out both;
+                overflow: hidden;
+            }
+        }
+
+        &.collapsing {
+            & > *:not(summary) {
+                animation: thought-collapse 0.25s ease-in both;
+                overflow: hidden;
+            }
         }
     }
 
@@ -1771,8 +1804,9 @@ body.resizing * {
 /* Compact Action Display */
 .action-compact {
     margin: 4px 0;
-    border-radius: 4px;
+    border-radius: 6px;
     overflow: hidden;
+    border: 1px solid var(--ai-border-color);
     border-left: 3px solid var(--ai-primary-color);
     background-color: var(--ai-panel-bg);
     animation: action-enter 0.25s ease-out both;
@@ -1949,8 +1983,9 @@ body.resizing * {
 /* Compact Approval Display */
 .approval-compact {
     margin: 4px 0;
-    border-radius: 4px;
+    border-radius: 6px;
     overflow: hidden;
+    border: 1px solid var(--ai-border-color);
     border-left: 3px solid #f0ab00;
     background-color: var(--ai-panel-bg);
     animation: action-enter 0.3s ease-out both;
@@ -2551,19 +2586,55 @@ body.resizing * {
         flex-direction: column;
     }
 
-    .ai-agent-chat,
-    .ai-agent-terminal {
-        /* Override inline styles - must use !important */
-        flex: 1 1 auto !important;
-        max-width: 100% !important;
+    .ai-agent-chat {
+        /* Allow flex-basis (controlled by inline style) to determine height */
         width: 100% !important;
-        height: 50%;
+        max-width: 100% !important;
+        flex-grow: 0 !important;
+        flex-shrink: 1 !important;
         min-width: 0;
+        min-height: 0 !important;
     }
 
-    /* Hide resize divider on mobile - layout is vertical */
+    .ai-agent-terminal {
+        /* Allow flex-basis (controlled by inline style) to determine height */
+        width: 100% !important;
+        max-width: 100% !important;
+        flex-grow: 0 !important;
+        flex-shrink: 1 !important;
+        min-width: 0;
+        min-height: 0 !important;
+    }
+
+    /* Show resize divider as a horizontal divider on mobile */
     .resize-divider {
-        display: none;
+        display: flex;
+        flex: 0 0 10px !important;
+        width: 100% !important;
+        height: 10px !important;
+        cursor: row-resize;
+        border-top: 1px solid var(--ai-border-color);
+        border-bottom: 1px solid var(--ai-border-color);
+        background-color: var(--ai-panel-bg);
+
+        .resize-divider__handle {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: row;
+        }
+
+        .resize-divider__dots {
+            flex-direction: row;
+            gap: 4px;
+            
+            span {
+                width: 4px;
+                height: 4px;
+            }
+        }
     }
 
     /* Chat bubbles wider on tablet/mobile */
@@ -5315,6 +5386,33 @@ body.resizing * {
         max-height: 500px;
         padding-top: 12px;
         padding-bottom: 12px;
+    }
+}
+
+/* Thought process expand/collapse keyframes */
+@keyframes thought-expand {
+    from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        max-height: 1000px;
+        transform: translateY(0);
+    }
+}
+
+@keyframes thought-collapse {
+    from {
+        opacity: 1;
+        max-height: 1000px;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-6px);
     }
 }
 

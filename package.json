@@ -1,6 +1,6 @@
 {
   "name": "cockpit-ai-agent",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "AI-powered terminal assistant for Cockpit",
   "type": "module",
   "main": "index.js",
