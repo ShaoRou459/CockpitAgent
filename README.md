@@ -13,35 +13,29 @@
 
 ## Features
 
-- 💻 **Interactive Browser Terminal** - Every AI command is visible in a real-time terminal. You can watch, interact, or take over instantly (e.g., entering sudo passwords or stopping commands) to ensure you remain in control.
-- 🤖 **Multi-Provider AI Support** - Choose between top-tier models from OpenAI, Google Gemini, or compatible providers to suit your specific administration needs and budget.
-- ⚡ **Autonomous Agentic Control** - Let the AI handle complex workflows by executing sequences of commands, analyzing outputs, and iterating until your goal is seamlessly achieved.
+- 💻 **Interactive Browser Terminal** - Every Agent executed command is visible in a real-time terminal. You can watch, interact, or take over instantly (e.g., entering sudo passwords or stopping commands) to ensure you remain in control.
+- 🤖 **BYOK AI Support** - Choose between top-tier models from OpenAI, Google Gemini, or compatible providers to suit your specific administration needs and budget.
+- ⚡ **Autonomous Agentic Control** - Let the Agent handle complex workflows by executing sequences of commands, analyzing outputs, and iterating until your goal is seamlessly achieved.
 - 🛡️ **Intelligent Safety Controls** - Execute commands with confidence using customizable risk-based safety modes that prevent accidental or malicious system changes.
 - 🔒 **Automatic Secret Protection** - Keep your sensitive data secure with automatic, on-the-fly detection and redaction of passwords, API keys, and private tokens.
+  
 
----
-
-## Demo
-
-https://github.com/user-attachments/assets/b480255c-60fb-48a2-ac13-9d84bee8d4a2
-
-[A more complex demo](https://youtu.be/t03g_AALki0)
-
-
----
-
-## Screenshots
+## Screenshots & Demo
 
 ### 1. Dashboard & Quick Actions
 The agent landing screen provides interactive shortcuts to get started instantly with standard server operations.
 
-<img src="assets/homescreen.png" alt="Dashboard UI" width="75%">
+<img src="assets/homescreen.png" alt="Dashboard UI" width="70%">
 
 ### 2. Autonomous Command Execution
-A real-time, side-by-side view showing the AI executing disk partition checks, parsing results, and formatting a clear storage summary—all while syncing live outputs with a fully interactive terminal.
+A real-time, side-by-side view showing the Agent's thought process and actions, while syncing live outputs with a fully interactive terminal.
 
-<img width="75%" alt="image" src="https://github.com/user-attachments/assets/c3d63ac2-7e39-4b05-a9dd-65096bdc17ae" />
+<img width="70%" alt="image" src="https://github.com/user-attachments/assets/c3d63ac2-7e39-4b05-a9dd-65096bdc17ae" />
 
+### 3. Demo
+<a href="https://www.youtube.com/watch?v=t03g_AALki0" target="_blank">
+  <img src="https://img.youtube.com/vi/t03g_AALki0/maxresdefault.jpg" alt="Demo Video" width="600" />
+</a>
 
 ## Installation
 
@@ -66,17 +60,17 @@ No Node.js, npm, or compilation is required! Install the pre-compiled plugin dir
 Since this tool has direct access to your server, we've built in multiple layers of security and privacy protections:
 
 ### 🛡️ Local & Private AI Options
-You can configure the agent to use local AI models (via Ollama, vLLM, etc.) ensuring that your server's data never leaves your internal network.
+The entire system is BYOK, including support for local AI models (via Ollama's Openai format endpoint, etc.) ensuring that your server's data is secure.
 
 ### 🔒 Automatic Secret Redaction
-Passwords, API keys, and tokens in command outputs are automatically replaced with placeholders (e.g., `<SECRET_1>`) before reaching the AI. The AI can use these placeholders to write commands, and the agent securely swaps the real secrets back in just before execution—ensuring credentials never leave your server.
+Passwords, API keys, and tokens in command outputs are automatically replaced with placeholders (e.g., `SECRET_1`) before reaching the Agent. It can use these placeholders to write commands, and the system securely swaps the real secrets back in just before execution, ensuring credentials never leave your server.
 
 ![Secret Redaction](assets/redact.png)
 
 ### 🚦 Risk Levels & YOLO Mode
 Every generated command is evaluated for risk before execution. Users can choose from multiple execution modes (Paranoid, Cautious, Moderate, YOLO, and Full YOLO) depending on their security preferences:
 
-<img src="assets/modechooser.png" alt="Mode Chooser" width="30%">
+<img src="assets/modechooser.png" alt="Mode Chooser" width="25%">
 
 | Level | Examples | Default Behavior |
 |-------|----------|------------------|
@@ -85,25 +79,26 @@ Every generated command is evaluated for risk before execution. Users can choose
 | 🔴 **High** | Config changes, user management | Always requires approval |
 | ☠️ **Critical** | `rm -rf /`, disk formats, fork bombs | **Blocked entirely** by the internal Command Blocklist |
 
-By default, **all** commands require explicit user approval. You can optionally enable **YOLO Mode** in the settings to bypass approval for **Low** risk commands.
-
-![Critical Prompt](assets/criticalprompt.png)
+<img  alt="image" width="70%" src="assets/criticalprompt.png" />
 
 ### 📝 Audit Logging
-Every command executed by the agent is logged, providing a clear paper trail of all system modifications.
+Every command executed by the Agent is logged, providing a clear paper trail of all system modifications.
+
+<img  alt="image" width="80%" src="https://github.com/user-attachments/assets/2d5dcb27-1e74-4e7c-9c41-d789ad955003" />
+
 
 ## Configuration
 
 1. Access Cockpit in your browser (usually `https://your-server:9090`)
-2. Navigate to **AI Agent** in the sidebar
+2. Navigate to **Agent** in the sidebar
 3. Click the ⚙️ settings button
 4. Configure your AI provider:
 
 | Provider | API Key Source | Notes |
 |----------|---------------|-------|
-| **OpenAI** | [platform.openai.com](https://platform.openai.com/api-keys) | Supports GPT-5.5, GPT-4o, o3-mini, etc. |
+| **OpenAI** | [platform.openai.com](https://platform.openai.com/api-keys) | Supports GPT-5.5, GPT-4.1, o3-mini, etc. |
 | **Google Gemini** | [AI Studio](https://makersuite.google.com/app/apikey) | Supports Gemini 3.5 Flash, 3.1 Pro, etc. |
-| **Custom** | Your provider | Any OpenAI-compatible API |
+| **Custom** | Your provider | Any OpenAI/Gemini-compatible API |
 
 ### Settings Overview
 
