@@ -76,7 +76,7 @@ Passwords, API keys, and tokens in command outputs are automatically replaced wi
 ### 🚦 Risk Levels & YOLO Mode
 Every generated command is evaluated for risk before execution. Users can choose from multiple execution modes (Paranoid, Cautious, Moderate, YOLO, and Full YOLO) depending on their security preferences:
 
-<img src="assets/modechooser.png" alt="Mode Chooser" width="50%">
+<img src="assets/modechooser.png" alt="Mode Chooser" width="30%">
 
 | Level | Examples | Default Behavior |
 |-------|----------|------------------|
