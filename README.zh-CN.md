@@ -34,11 +34,11 @@ https://github.com/user-attachments/assets/af7baa1a-23b7-4205-b454-8d88b15ba490
 
 ### 1. 仪表盘与快捷操作
 智能体首页提供交互式快捷方式，可快速开始标准服务器操作。
-![仪表盘界面](assets/homescreen.png)
+<img src="assets/homescreen.png" alt="仪表盘界面" width="75%">
 
 ### 2. 自主命令执行
 实时分屏视图展示 AI 执行磁盘分区检查、解析结果并格式化存储摘要——同时与完全交互式终端同步实时输出。
-<img width="2103" height="1547" alt="image" src="https://github.com/user-attachments/assets/c3d63ac2-7e39-4b05-a9dd-65096bdc17ae" />
+<img width="75%" alt="image" src="https://github.com/user-attachments/assets/c3d63ac2-7e39-4b05-a9dd-65096bdc17ae" />
 
 ## 安装
 
@@ -73,7 +73,7 @@ https://github.com/user-attachments/assets/af7baa1a-23b7-4205-b454-8d88b15ba490
 ### 🚦 风险等级与 YOLO 模式
 每条生成的命令在执行前都会评估风险。用户可根据安全偏好选择多种执行模式（偏执、谨慎、中等、YOLO 和完全 YOLO）：
 
-![模式选择器](assets/modechooser.png)
+<img src="assets/modechooser.png" alt="模式选择器" width="50%">
 
 | 等级 | 示例 | 默认行为 |
 |-------|----------|------------------|
@@ -120,7 +120,38 @@ https://github.com/user-attachments/assets/af7baa1a-23b7-4205-b454-8d88b15ba490
 
 ## 架构
 
-![架构图](assets/architecture.png)
+```mermaid
+flowchart TD
+    subgraph UI [User Interface Layer]
+        direction LR
+        Chat["Chat Panel<br/>React / PatternFly"]
+        Term["Terminal View<br/>xterm.js PTY"]
+    end
+
+    AppCore["Application Core<br/>app.tsx — State, Theme, Settings"]
+
+    subgraph Orch [Orchestration Layer]
+        direction LR
+        AIClient["AI Client<br/>ai-client.ts — Multi-provider"]
+        Agent["Agent Controller<br/>agent.ts — Orchestration & Approvals"]
+        Secrets["Secret Manager<br/>secrets.ts — Redaction"]
+        AIClient <--> Agent <--> Secrets
+    end
+
+    ExtAI["External AI APIs<br/>OpenAI / Gemini"]
+    Cockpit["Cockpit API<br/>cockpit.spawn / cockpit.file"]
+    Linux["Linux Server Host"]
+
+    UI -->|User Input / Display| AppCore
+    AppCore --> Orch
+    
+    AIClient -->|HTTP via curl| ExtAI
+    Agent -->|Approved Actions| Cockpit
+    
+    Cockpit -->|Persistent PTY Session| Linux
+    
+    Linux -->|Output Sync| Term
+```
 
 ## 🛠️ 开发与源码设置
 

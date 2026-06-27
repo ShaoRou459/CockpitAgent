@@ -34,11 +34,13 @@ https://github.com/user-attachments/assets/b480255c-60fb-48a2-ac13-9d84bee8d4a2
 
 ### 1. Dashboard & Quick Actions
 The agent landing screen provides interactive shortcuts to get started instantly with standard server operations.
-![Dashboard UI](assets/homescreen.png)
+
+<img src="assets/homescreen.png" alt="Dashboard UI" width="75%">
 
 ### 2. Autonomous Command Execution
 A real-time, side-by-side view showing the AI executing disk partition checks, parsing results, and formatting a clear storage summary—all while syncing live outputs with a fully interactive terminal.
-<img width="2103" height="1547" alt="image" src="https://github.com/user-attachments/assets/c3d63ac2-7e39-4b05-a9dd-65096bdc17ae" />
+
+<img width="75%" alt="image" src="https://github.com/user-attachments/assets/c3d63ac2-7e39-4b05-a9dd-65096bdc17ae" />
 
 
 ## Installation
@@ -74,7 +76,7 @@ Passwords, API keys, and tokens in command outputs are automatically replaced wi
 ### 🚦 Risk Levels & YOLO Mode
 Every generated command is evaluated for risk before execution. Users can choose from multiple execution modes (Paranoid, Cautious, Moderate, YOLO, and Full YOLO) depending on their security preferences:
 
-![Mode Chooser](assets/modechooser.png)
+<img src="assets/modechooser.png" alt="Mode Chooser" width="50%">
 
 | Level | Examples | Default Behavior |
 |-------|----------|------------------|
@@ -120,7 +122,38 @@ The settings panel allows you to customize the agent's behavior, safety limits, 
 
 ## Architecture
 
-![Architecture Diagram](assets/architecture.png)
+```mermaid
+flowchart TD
+    subgraph UI [User Interface Layer]
+        direction LR
+        Chat["Chat Panel<br/>React / PatternFly"]
+        Term["Terminal View<br/>xterm.js PTY"]
+    end
+
+    AppCore["Application Core<br/>app.tsx — State, Theme, Settings"]
+
+    subgraph Orch [Orchestration Layer]
+        direction LR
+        AIClient["AI Client<br/>ai-client.ts — Multi-provider"]
+        Agent["Agent Controller<br/>agent.ts — Orchestration & Approvals"]
+        Secrets["Secret Manager<br/>secrets.ts — Redaction"]
+        AIClient <--> Agent <--> Secrets
+    end
+
+    ExtAI["External AI APIs<br/>OpenAI / Gemini"]
+    Cockpit["Cockpit API<br/>cockpit.spawn / cockpit.file"]
+    Linux["Linux Server Host"]
+
+    UI -->|User Input / Display| AppCore
+    AppCore --> Orch
+    
+    AIClient -->|HTTP via curl| ExtAI
+    Agent -->|Approved Actions| Cockpit
+    
+    Cockpit -->|Persistent PTY Session| Linux
+    
+    Linux -->|Output Sync| Term
+```
 
 ## 🛠️ Development & Source Setup
 
