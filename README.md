@@ -26,12 +26,14 @@
 ### 1. Dashboard & Quick Actions
 The agent landing screen provides interactive shortcuts to get started instantly with standard server operations.
 
-<img src="assets/homescreen.png" alt="Dashboard UI" width="70%">
+<img alt="Dashboard UI" width="70%" src="https://github.com/user-attachments/assets/df33923f-5a84-44a5-8d3e-8b1492586e8e" />
+
 
 ### 2. Autonomous Command Execution
 A real-time, side-by-side view showing the Agent's thought process and actions, while syncing live outputs with a fully interactive terminal.
 
-<img width="70%" alt="image" src="https://github.com/user-attachments/assets/c3d63ac2-7e39-4b05-a9dd-65096bdc17ae" />
+<img width="70%" alt="task-ui" src="https://github.com/user-attachments/assets/ba8c6876-e0e4-4715-8bba-bb5b003e828c" />
+
 
 ### 3. Demo
 <a href="https://www.youtube.com/watch?v=t03g_AALki0" target="_blank">
