@@ -125,7 +125,7 @@ export class AgentController {
                 if (this.isAborted || this.currentExecutionId !== executionId) {
                     throw new Error('AbortError');
                 }
-                
+
                 iteration++;
 
                 // Send to AI
@@ -146,8 +146,28 @@ export class AgentController {
                     throw new Error('AbortError');
                 }
 
-                // If no actions, we're done
+                const hasDone = aiResponse.actions?.some(a => a.type === 'done');
+                const hasAskUser = aiResponse.actions?.some(a => a.type === 'ask_user');
+                const executableActions = aiResponse.actions ? aiResponse.actions.filter(a => a.type !== 'done') : [];
+
+                // If no actions, prompt the model again
                 if (!aiResponse.actions || aiResponse.actions.length === 0) {
+                    this.conversationHistory.push({
+                        role: 'assistant',
+                        content: aiResponse.response
+                    });
+                    
+                    this.conversationHistory.push({
+                        role: 'user',
+                        content: 'System: You did not output a JSON block with actions. If you have commands to run, output them now. If you have finished the task, output the "done" action.'
+                    });
+                    
+                    finalResponse = aiResponse.response;
+                    continue;
+                }
+
+                // If 'done' is the only action, we're finished
+                if (hasDone && executableActions.length === 0) {
                     this.conversationHistory.push({
                         role: 'assistant',
                         content: aiResponse.response
@@ -157,7 +177,7 @@ export class AgentController {
                 }
 
                 // If ask_user is present, abort execution and wait for user response
-                if (aiResponse.actions.some(a => a.type === 'ask_user')) {
+                if (hasAskUser) {
                     this.conversationHistory.push({
                         role: 'assistant',
                         content: aiResponse.response
@@ -167,7 +187,7 @@ export class AgentController {
                 }
 
                 // For interactive commands, show the AI response immediately before waiting
-                const hasInteractive = aiResponse.actions.some(a => a.interactive);
+                const hasInteractive = executableActions.some(a => a.interactive);
                 if (hasInteractive && onIntermediateResponse && aiResponse.response && !(this.settings.streamResponses && onAssistantStream)) {
                     onIntermediateResponse(aiResponse.response);
                 }
@@ -175,7 +195,7 @@ export class AgentController {
                 // Execute actions
                 const results = await this.executeActions(
                     executionId,
-                    aiResponse.actions,
+                    executableActions,
                     onAction,
                     onOutput,
                     onActionStarted,
@@ -183,7 +203,7 @@ export class AgentController {
                     onInteractiveCommand,
                     executeCommand
                 );
-                
+
                 if (this.isAborted || this.currentExecutionId !== executionId) {
                     throw new Error('AbortError');
                 }
@@ -196,6 +216,12 @@ export class AgentController {
 
                 // If all actions were blocked/denied, break
                 if (results.length === 0) {
+                    finalResponse = aiResponse.response;
+                    break;
+                }
+
+                // If the model also included a done action along with commands, break after execution
+                if (hasDone) {
                     finalResponse = aiResponse.response;
                     break;
                 }
@@ -243,7 +269,7 @@ export class AgentController {
             if (this.isAborted || this.currentExecutionId !== executionId) {
                 throw new Error('AbortError');
             }
-            
+
             // Log action request
             debugLogger.logAction(action, 'requested');
 
@@ -558,11 +584,11 @@ ${parts.join('\n\n---\n\n')}
 
 Based on these results, decide the next steps.
 
-IMPORTANT: If you have a plan to execute commands, DO NOT just state the plan in text. You MUST output the actual commands as a JSON array inside a \`\`\`json block at the end of your response so they can be executed immediately. Do not wait for user confirmation unless you specifically use the 'ask_user' action type. If no more commands are needed, omit the JSON block.`;
+IMPORTANT: If you have a plan to execute commands, DO NOT just state the plan in text. You MUST output the actual commands as a JSON array inside a \`\`\`json block at the end of your response so they can be executed immediately. Do not wait for user confirmation unless you specifically use the 'ask_user' action type. If no more commands are needed, you MUST output a JSON block with the 'done' action type.`;
     }
 
     private buildSystemPrompt(context: SystemContext): string {
-        const terminalInfo = context.terminalContext 
+        const terminalInfo = context.terminalContext
             ? `\n\n## Recent Terminal Visible Content\nThe following is the actual text currently visible on the user's terminal screen. You can use this to understand what commands the user has recently run manually and their outputs:\n\`\`\`\n${context.terminalContext}\n\`\`\``
             : '';
 
@@ -580,7 +606,7 @@ Before writing any natural language response or executing any actions, you MUST 
 After your reasoning block, answer the user naturally. You can use markdown styling, code blocks, and multi-paragraph formatting.
 If you need to execute commands, file operations, or services, append them at the very end of your response wrapped in a \`\`\`json block.
 
-Example response:
+Example — running a command:
 <think>
 The user wants to check the operating system details. I will execute the 'cat /etc/os-release' command, which is a low-risk informational command, to retrieve the OS configuration.
 </think>
@@ -596,17 +622,37 @@ I will check the operating system details for you now!
 ]
 \`\`\`
 
+Example — writing a file:
+\`\`\`json
+[
+  {
+    "type": "file_write",
+    "path": "/home/user/notes.md",
+    "description": "Writing notes file",
+    "risk_level": "medium"
+  }
+]
+\`\`\`
+
+__FILE_CONTENT__
+# My Notes
+This is the content of the file.
+It can contain any characters, code blocks, markdown, etc.
+__END_FILE_CONTENT__
+
 CRITICAL FORMATTING RULES:
 - Start your response with <think>...</think> enclosing your reasoning.
 - The \`\`\`json block must contain an Array of action objects.
-- If you don't need to perform any commands, simply omit the json block entirely.
+- You MUST output the JSON block with your actions. If you have finished the task and no further commands are needed, you MUST output a JSON array containing a single "done" action. Do NOT omit the JSON block.
+- For file_write actions: Do NOT put file content in the JSON "content" field. Instead, place the content AFTER the JSON block between __FILE_CONTENT__ and __END_FILE_CONTENT__ markers. This prevents formatting issues with special characters. If writing multiple files, use one pair of markers per file in the same order as the actions.
 
 ## Action Types
 - command: Execute a shell command
 - file_read: Read a file (use "path" field instead of "command")
-- file_write: Write to a file (use "path" and "content" fields)
+- file_write: Write to a file (use "path" field in JSON, file content goes in __FILE_CONTENT__ block AFTER the JSON)
 - service: Manage systemd service (use "service" and "operation" fields, operation: start|stop|restart|status)
 - ask_user: Ask the user a question and wait for their response (use "question" field). DO NOT queue any other commands after this!
+- done: Indicate that you have completed the task and no further commands are needed. (use "description" field).
 
 ## Risk Levels - BE ACCURATE
 - low: Read-only, informational commands (ls, cat, df, ps, top, journalctl, systemctl status)
@@ -642,7 +688,7 @@ When a command is interactive, I will show your hint to the user so they know to
 4. Break complex tasks into steps - you can run multiple commands
 5. If a task is unclear, ask for clarification instead of guessing
 6. When reporting command results, summarize key findings
-7. If you don't need to run any commands, omit the json block.
+7. If you have finished the task, output a JSON block with the "done" action.
 8. You can run multiple commands in sequence for complex tasks, just add multiple items to the json array.
 
 ## Secret Handling

@@ -17,7 +17,7 @@ export interface Message {
 
 // Action that AI wants to perform
 export interface Action {
-    type: 'command' | 'file_read' | 'file_write' | 'service' | 'ask_user';
+    type: 'command' | 'file_read' | 'file_write' | 'service' | 'ask_user' | 'done';
     command?: string;
     path?: string;
     content?: string;

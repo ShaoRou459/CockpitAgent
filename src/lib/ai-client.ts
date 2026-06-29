@@ -94,7 +94,7 @@ export interface SendMessageOptions {
     onResponseStream?: (text: string) => void; // Streams the parsed "response" field (not raw JSON)
 }
 
-    // Removed legacy JSON stream extractors
+// Removed legacy JSON stream extractors
 
 // Helper function to make HTTP requests via curl
 async function httpRequest(
@@ -607,9 +607,9 @@ export class AIClient {
         const isValidActionArray = (parsed: any): boolean => {
             if (!Array.isArray(parsed)) return false;
             if (parsed.length === 0) return true;
-            return parsed.every(item => 
+            return parsed.every(item =>
                 item && typeof item === 'object' && typeof item.type === 'string' &&
-                ['command', 'file_read', 'file_write', 'service', 'ask_user'].includes(item.type)
+                ['command', 'file_read', 'file_write', 'service', 'ask_user', 'done'].includes(item.type)
             );
         };
 
@@ -618,10 +618,11 @@ export class AIClient {
             const trimmed = blockContent.trim();
             if (!trimmed.startsWith('[')) return false;
             const hasKeywords = trimmed.includes('"type"') && (
-                trimmed.includes('"command"') || 
-                trimmed.includes('"path"') || 
-                trimmed.includes('"service"') || 
-                trimmed.includes('"question"')
+                trimmed.includes('"command"') ||
+                trimmed.includes('"path"') ||
+                trimmed.includes('"service"') ||
+                trimmed.includes('"question"') ||
+                trimmed.includes('"done"')
             );
             return hasKeywords && (isJsonLanguage || isLastBlock);
         };
@@ -652,7 +653,7 @@ export class AIClient {
 
         for (let i = blocks.length - 1; i >= 0; i--) {
             const block = blocks[i];
-            
+
             // 1. Try to parse as valid actions
             try {
                 const parsed = JSON.parse(block.content.trim());
@@ -683,9 +684,89 @@ export class AIClient {
 
         // Clean response by stripping the identified actions block only
         let responseText = content;
+        let actionsBlockStart = -1;
+        let actionsBlockEnd = -1;
+
         if (actionsBlockIndex !== -1) {
             const block = blocks[actionsBlockIndex];
-            responseText = (content.substring(0, block.index) + content.substring(block.endIndex)).trim();
+            actionsBlockStart = block.index;
+            actionsBlockEnd = block.endIndex;
+        }
+
+        // Greedy fallback: if regex-based search didn't find a valid actions block,
+        // try a greedy approach. This handles cases where the JSON content itself
+        // contains ``` (e.g. markdown in a file_write content field).
+        if (actions.length === 0 && actionsBlockIndex === -1) {
+            // Find the last ```json opener in the content
+            const jsonOpenerRegex = /```json\s*\n/gi;
+            let lastOpener: { index: number; end: number } | null = null;
+            let openerMatch;
+            while ((openerMatch = jsonOpenerRegex.exec(content)) !== null) {
+                lastOpener = { index: openerMatch.index, end: openerMatch.index + openerMatch[0].length };
+            }
+
+            if (lastOpener) {
+                // Find all ``` positions after the opener's content start
+                const closingPositions: number[] = [];
+                let searchIdx = lastOpener.end;
+                while (searchIdx < content.length) {
+                    const pos = content.indexOf('```', searchIdx);
+                    if (pos === -1) break;
+                    closingPositions.push(pos);
+                    searchIdx = pos + 3;
+                }
+
+                // Try from the furthest closing ``` backwards (greedy to non-greedy)
+                for (let k = closingPositions.length - 1; k >= 0; k--) {
+                    const blockContent = content.slice(lastOpener.end, closingPositions[k]);
+                    try {
+                        const parsed = JSON.parse(blockContent.trim());
+                        if (isValidActionArray(parsed)) {
+                            actions = parsed;
+                            actionsBlockStart = lastOpener.index;
+                            actionsBlockEnd = closingPositions[k] + 3;
+                            debugLogger.log('info', 'ai-parse', 'Greedy fallback',
+                                'Found valid JSON actions block using greedy matching (content contained nested backticks)');
+                            break;
+                        }
+                    } catch {
+                        continue;
+                    }
+                }
+            }
+        }
+
+        if (actionsBlockStart !== -1 && actionsBlockEnd !== -1) {
+            responseText = (content.substring(0, actionsBlockStart) + content.substring(actionsBlockEnd)).trim();
+        }
+
+        // Extract __FILE_CONTENT__ blocks and attach to file_write actions.
+        // This supports a format where file content is kept outside the JSON block
+        // to avoid backtick collisions and JSON escaping issues with large files.
+        const fileContentRegex = /__FILE_CONTENT__\s*\n([\s\S]*?)\n\s*__END_FILE_CONTENT__/g;
+        const fileContentBlocks: string[] = [];
+        let fcMatch;
+        while ((fcMatch = fileContentRegex.exec(responseText)) !== null) {
+            fileContentBlocks.push(fcMatch[1]);
+        }
+
+        if (fileContentBlocks.length > 0) {
+            // Attach content to file_write actions that don't already have content
+            let blockIdx = 0;
+            for (const action of actions) {
+                if (action.type === 'file_write' && !action.content && blockIdx < fileContentBlocks.length) {
+                    action.content = fileContentBlocks[blockIdx];
+                    blockIdx++;
+                }
+            }
+
+            // Strip __FILE_CONTENT__ blocks from the response text
+            responseText = responseText.replace(/__FILE_CONTENT__\s*\n[\s\S]*?\n\s*__END_FILE_CONTENT__/g, '').trim();
+
+            if (blockIdx > 0) {
+                debugLogger.log('info', 'ai-parse', 'File content blocks',
+                    `Attached ${blockIdx} external file content block(s) to file_write actions`);
+            }
         }
 
         const result: AIResponse = {

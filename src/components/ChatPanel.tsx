@@ -749,7 +749,7 @@ const MessageBubble: React.FC<{ message: Message }> = ({ message }) => {
     if (details.open) {
       // Transition to closed: add collapsing class first
       details.classList.add('collapsing');
-      
+
       // Wait for the collapse animation to finish, then unset the open attribute
       setTimeout(() => {
         details.open = false;
@@ -809,16 +809,28 @@ const MessageBubble: React.FC<{ message: Message }> = ({ message }) => {
         ? message.content.replace(rawJsonContent, "").trim()
         : message.content;
 
-      // Convert <think> and <thought> tags to collapsible details
+      // Convert <think>, <thought> and <reasoning> tags to collapsible details
       cleanContent = cleanContent.replace(
-        /<(?:think|thought)>([\s\S]*?)<\/(?:think|thought)>/gi,
+        /<(?:think|thought|reasoning)>([\s\S]*?)<\/(?:think|thought|reasoning)>/gi,
         `\n<details class="thought-process"><summary>${_("Thought Process")}</summary>\n\n$1\n\n</details>\n`,
       );
 
       // Handle unclosed tags for active streaming
       cleanContent = cleanContent.replace(
-        /<(?:think|thought)>([\s\S]*)$/i,
+        /<(?:think|thought|reasoning)>([\s\S]*)$/i,
         `\n<details class="thought-process" open><summary>${_("Thought Process")}</summary>\n\n$1\n\n</details>\n`,
+      );
+
+      // Strip __FILE_CONTENT__ blocks (content is already shown in the file_write action card)
+      cleanContent = cleanContent.replace(
+        /__FILE_CONTENT__\s*\n[\s\S]*?\n\s*__END_FILE_CONTENT__/g,
+        "",
+      );
+
+      // Handle unclosed __FILE_CONTENT__ during streaming (END marker hasn't arrived yet)
+      cleanContent = cleanContent.replace(
+        /__FILE_CONTENT__\s*\n[\s\S]*$/i,
+        "",
       );
 
       const rawHtml = marked.parse(cleanContent) as string;
@@ -834,7 +846,7 @@ const MessageBubble: React.FC<{ message: Message }> = ({ message }) => {
   };
 
   return (
-    <div 
+    <div
       className={`message-bubble ${message.role} ${isError ? "error" : ""}`}
       onClick={handleMessageClick}
     >
